@@ -1,9 +1,7 @@
 name: Daily hit probabilities
 on:
   schedule:
-    -    - cron: '0 13,16,19,21 * * *'
-    - cron: '0 0 * * *'
-  * * *'
+    - cron: '0 0,13,16,19,21 * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -24,3 +22,4 @@ jobs:
           git add docs/index.html
           git commit -m "Update" || exit 0
           git push
+
