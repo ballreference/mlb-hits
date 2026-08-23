@@ -1,0 +1,24 @@
+name: Daily hit probabilities
+on:
+  schedule:
+    - cron: '0 13,17,21,23 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          mkdir -p docs
+          python3 mlb_hit_probs.py --projected --format html --out docs/index.html
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs/index.html
+          git commit -m "Update" || exit 0
+          git push
