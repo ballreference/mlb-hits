@@ -23,9 +23,10 @@ import argparse
 import glob
 import json
 import os
+import subprocess
 import sys
 from collections import defaultdict
-from datetime import datetime
+from datetime import date as _date, datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from mlb_hit_probs import api_get, render_html  # noqa: E402
@@ -34,8 +35,8 @@ PRED_DIR = "data/predictions"
 GRADE_DIR = "data/graded"
 DOCS_DIR = "docs"
 
-# Only track predictions at or above this probability — keeps files small.
-MIN_TRACK = 0.60
+# Only track predictions at or above this probability.
+MIN_TRACK = 0.70
 # Buckets shown on the results page.
 BUCKET_LO = 70
 BUCKET_HI = 90
@@ -109,6 +110,27 @@ def grade_day(day: str, rows: list[dict]) -> list[dict] | None:
     return graded
 
 
+def backfill(days_back: int, today: str) -> None:
+    """Rebuild prediction snapshots for recent days that were never saved.
+
+    For a past date the schedule API returns the real posted lineups, so these
+    are graded as POSTED. Season stats are slightly ahead of what the model
+    would have known that morning, so treat backfilled days as approximate.
+    """
+    here = os.path.dirname(os.path.abspath(__file__))
+    for i in range(1, days_back + 1):
+        day = (_date.fromisoformat(today) - timedelta(days=i)).isoformat()
+        path = f"{PRED_DIR}/{day}.json"
+        if os.path.exists(path):
+            continue
+        print(f"  backfilling {day}...", file=sys.stderr)
+        subprocess.run(
+            [sys.executable, os.path.join(here, "mlb_hit_probs.py"),
+             "--date", day, "--format", "json", "--out", path],
+            check=False,
+        )
+
+
 def grade_pending() -> int:
     """Grade every prediction file that doesn't have a graded counterpart."""
     os.makedirs(GRADE_DIR, exist_ok=True)
@@ -177,32 +199,36 @@ def build_summary(rows: list[dict]) -> dict:
     for pct in range(BUCKET_LO, BUCKET_HI + 1):
         lo = pct / 100.0
         hi = (pct + 1) / 100.0
-        sel = [r for r in posted if lo <= r["prob"] < hi]
+        sel = [r for r in rows if lo <= r["prob"] < hi]
         if pct == BUCKET_HI:
-            sel = [r for r in posted if r["prob"] >= lo]
+            sel = [r for r in rows if r["prob"] >= lo]
         if sel:
             by_bucket[pct] = tally(sel)
 
     cumulative = {}
     for pct in range(BUCKET_LO, 86):
-        sel = [r for r in posted if r["prob"] >= pct / 100.0]
+        sel = [r for r in rows if r["prob"] >= pct / 100.0]
         if sel:
             cumulative[pct] = tally(sel)
 
     by_day = {}
-    for r in posted:
-        if r["prob"] >= 0.70:
-            by_day.setdefault(r["date"], []).append(r)
+    for r in rows:
+        by_day.setdefault(r["date"], []).append(r)
     daily = {d: tally(v) for d, v in sorted(by_day.items(), reverse=True)}
+
+    detail = {}
+    for day, picks in sorted(by_day.items(), reverse=True)[:14]:
+        detail[day] = sorted(picks, key=lambda r: -r["prob"])
 
     return {
         "generated": datetime.now().isoformat(timespec="seconds"),
-        "overall_70_posted": tally([r for r in posted if r["prob"] >= 0.70]),
-        "overall_70_all": tally([r for r in rows if r["prob"] >= 0.70]),
+        "overall_70_all": tally(rows),
+        "overall_70_posted": tally(posted),
         "days_tracked": len({r["date"] for r in rows}),
         "by_bucket": by_bucket,
         "cumulative": cumulative,
         "daily": daily,
+        "detail": detail,
     }
 
 
@@ -211,22 +237,31 @@ def build_summary(rows: list[dict]) -> dict:
 # ---------------------------------------------------------------------------
 
 def render_results(s: dict) -> str:
-    o = s["overall_70_posted"]
+    o = s["overall_70_all"]
 
     def edge_span(v):
         color = "#15803d" if v >= 0 else "#b91c1c"
         return f"<span style='color:{color}'>{v * 100:+.1f}</span>"
 
     def rowset(d, label_fmt):
+        if not d:
+            return "<tr><td colspan='8'>Not enough data yet.</td></tr>"
+        best = max((t["rate"] for t in d.values() if t["n"] >= 10), default=-1)
         out = []
         for k, t in sorted(d.items()):
+            miss = t["n"] - t["hits"]
+            star = " &#9733;" if t["n"] >= 10 and t["rate"] == best else ""
+            bar = (f"<div style='background:#e5e7eb;border-radius:3px;height:8px;"
+                   f"width:70px'><div style='background:#2563eb;height:8px;"
+                   f"border-radius:3px;width:{t['rate'] * 70:.0f}px'></div></div>")
             out.append(
-                f"<tr><td class='n'>{label_fmt.format(k)}</td>"
-                f"<td>{t['n']}</td><td>{t['hits']}</td>"
+                f"<tr><td class='n'>{label_fmt.format(k)}{star}</td>"
+                f"<td class='y'>{t['hits']}</td><td class='x'>{miss}</td>"
+                f"<td>{t['n']}</td>"
                 f"<td class='n'>{t['rate'] * 100:.1f}%</td>"
                 f"<td>{t['expected'] * 100:.1f}%</td>"
-                f"<td>{edge_span(t['edge'])}</td></tr>")
-        return "\n".join(out) or "<tr><td colspan='6'>Not enough data yet.</td></tr>"
+                f"<td>{edge_span(t['edge'])}</td><td>{bar}</td></tr>")
+        return "\n".join(out)
 
     daily_rows = []
     for day, t in list(s["daily"].items())[:30]:
@@ -236,6 +271,24 @@ def render_results(s: dict) -> str:
             f"<td>{t['expected'] * 100:.1f}%</td>"
             f"<td>{edge_span(t['edge'])}</td></tr>")
     daily_html = "\n".join(daily_rows) or "<tr><td colspan='5'>No graded days yet.</td></tr>"
+
+    detail_html = []
+    for i, (day, picks) in enumerate(s.get("detail", {}).items()):
+        hits = sum(p["got_hit"] for p in picks)
+        n = len(picks)
+        rows_h = "\n".join(
+            f"<tr><td class='n'>{p['prob'] * 100:.1f}%</td>"
+            f"<td class='n'>{p['batter']}</td><td>{p['team']}</td>"
+            f"<td>{p['opp_sp']}</td><td>{p['hits']}-for-{p['pa']}</td>"
+            f"<td class='{'y' if p['got_hit'] else 'x'}'>"
+            f"{'HIT' if p['got_hit'] else 'no'}</td></tr>"
+            for p in picks)
+        detail_html.append(
+            f"<details {'open' if i == 0 else ''}><summary>{day} &mdash; "
+            f"<b>{hits}/{n}</b> ({(hits / n * 100) if n else 0:.1f}%)</summary>"
+            f"<table><tr><th>Prob</th><th>Batter</th><th>Tm</th><th>Opposing SP</th>"
+            f"<th>Line</th><th>Result</th></tr>{rows_h}</table></details>")
+    detail_block = "\n".join(detail_html) or "<p>No graded days yet.</p>"
 
     return f"""<!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -257,14 +310,19 @@ def render_results(s: dict) -> str:
  th{{background:#1f2937;color:#fff;text-align:left;padding:7px 9px;
      font-size:10px;letter-spacing:.05em;text-transform:uppercase}}
  td{{padding:6px 9px;border-top:1px solid #eee}} td.n{{font-weight:600}}
+ td.y{{color:#15803d;font-weight:700}} td.x{{color:#b91c1c}}
+ details{{margin-bottom:10px;background:#fff;border-radius:6px;
+          box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden}}
+ summary{{padding:10px 12px;cursor:pointer;font-size:13px}}
+ details table{{box-shadow:none;border-radius:0}}
 </style>
 <h1>Track record</h1>
 <p class="sub">{s['days_tracked']} day(s) graded &middot; updated {s['generated'][:16].replace('T', ' ')}
  &middot; <a href="index.html">today's board &rarr;</a></p>
 
 <div class="cards">
-  <div class="card"><div class="big">{o['hits']}/{o['n']}</div>
-    <div class="lbl">70%+ record</div></div>
+  <div class="card"><div class="big">{o['hits']}&#8202;-&#8202;{o['n'] - o['hits']}</div>
+    <div class="lbl">hits &ndash; misses</div></div>
   <div class="card"><div class="big">{o['rate'] * 100:.1f}%</div>
     <div class="lbl">actual hit rate</div></div>
   <div class="card"><div class="big">{o['expected'] * 100:.1f}%</div>
@@ -272,21 +330,25 @@ def render_results(s: dict) -> str:
   <div class="card"><div class="big">{edge_span(o['edge'])}</div>
     <div class="lbl">over / under</div></div>
 </div>
-<p class="sub">Posted lineups only. Including projected lineups:
- {s['overall_70_all']['hits']}/{s['overall_70_all']['n']}
- ({s['overall_70_all']['rate'] * 100:.1f}%).</p>
+<p class="sub">Every pick shown on the board (70%+). Posted lineups only:
+ {s['overall_70_posted']['hits']}/{s['overall_70_posted']['n']}
+ ({s['overall_70_posted']['rate'] * 100:.1f}%). &#9733; marks the best bucket
+ with at least 10 tries.</p>
 
-<h2>By probability bucket</h2>
-<table><tr><th>Bucket</th><th>N</th><th>Hits</th><th>Actual</th>
-<th>Predicted</th><th>Diff</th></tr>
+<h2>Each percent &mdash; which one actually hits most</h2>
+<table><tr><th>Prob</th><th>Hit</th><th>Miss</th><th>Total</th><th>Actual</th>
+<th>Predicted</th><th>Diff</th><th></th></tr>
 {rowset(s['by_bucket'], '{}%')}</table>
 
 <h2>Cumulative &mdash; every pick at or above</h2>
-<table><tr><th>Threshold</th><th>N</th><th>Hits</th><th>Actual</th>
-<th>Predicted</th><th>Diff</th></tr>
+<table><tr><th>Thresh</th><th>Hit</th><th>Miss</th><th>Total</th><th>Actual</th>
+<th>Predicted</th><th>Diff</th><th></th></tr>
 {rowset(s['cumulative'], '&ge;{}%')}</table>
 
-<h2>Day by day (70%+)</h2>
+<h2>Every 70%+ pick, day by day</h2>
+{detail_block}
+
+<h2>Daily summary</h2>
 <table><tr><th>Date</th><th>Record</th><th>Actual</th><th>Predicted</th><th>Diff</th></tr>
 {daily_html}</table>
 """
@@ -300,9 +362,17 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--today", help="path to today's prediction JSON")
     ap.add_argument("--date", help="date of that JSON, YYYY-MM-DD")
+    ap.add_argument("--backfill", type=int, default=0, metavar="N",
+                    help="rebuild missing prediction snapshots for the last N days")
     args = ap.parse_args()
 
     os.makedirs(DOCS_DIR, exist_ok=True)
+    os.makedirs(PRED_DIR, exist_ok=True)
+
+    if args.backfill:
+        anchor = args.date or _date.today().isoformat()
+        print(f"Checking last {args.backfill} day(s) for gaps...", file=sys.stderr)
+        backfill(args.backfill, anchor)
 
     if args.today and os.path.exists(args.today):
         with open(args.today, encoding="utf-8") as fh:
@@ -321,7 +391,7 @@ def main() -> int:
     with open(f"{DOCS_DIR}/results.html", "w", encoding="utf-8") as fh:
         fh.write(render_results(summary))
 
-    o = summary["overall_70_posted"]
+    o = summary["overall_70_all"]
     print(f"Record at 70%+: {o['hits']}/{o['n']} ({o['rate'] * 100:.1f}%)",
           file=sys.stderr)
     return 0
