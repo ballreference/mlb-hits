@@ -14,12 +14,15 @@ jobs:
         with:
           python-version: '3.11'
       - run: |
-          mkdir -p docs
-          python3 mlb_hit_probs.py --projected --format html --out docs/index.html
+          DATE=$(TZ=America/New_York date +%F)
+          mkdir -p docs data/predictions data/graded
+          python3 mlb_hit_probs.py --date "$DATE" --projected --format json --out data/predictions/$DATE.json
+          python3 mlb_grade.py --today data/predictions/$DATE.json --date "$DATE"
       - run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add docs/index.html
+          git add -A docs data
           git commit -m "Update" || exit 0
           git push
+
 
