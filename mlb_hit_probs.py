@@ -35,10 +35,39 @@ import time
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date as _date, datetime, timedelta
+from datetime import date as _date, datetime, timedelta, timezone
+
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:  # very old Python
+    ZoneInfo = None
 
 API = "https://statsapi.mlb.com/api/v1"
 UA = "mlb-hit-probs/1.0 (personal use)"
+
+# Timezone that first-pitch times are displayed in. Change to "America/Chicago",
+# "America/Denver", "America/Los_Angeles", etc. if you want a different clock.
+DISPLAY_TZ = "America/New_York"
+
+
+def local_time(iso_utc: str) -> str:
+    """'2026-08-24T23:05:00Z' -> '7:05p' in DISPLAY_TZ."""
+    if not iso_utc:
+        return "-"
+    try:
+        dt = datetime.strptime(iso_utc, "%Y-%m-%dT%H:%M:%SZ")
+        dt = dt.replace(tzinfo=timezone.utc)
+        if ZoneInfo is not None:
+            try:
+                dt = dt.astimezone(ZoneInfo(DISPLAY_TZ))
+            except Exception:  # no tzdata installed
+                dt = dt.astimezone(timezone(timedelta(hours=-4)))
+        else:
+            dt = dt.astimezone(timezone(timedelta(hours=-4)))
+        hour = dt.hour % 12 or 12
+        return f"{hour}:{dt.minute:02d}{'a' if dt.hour < 12 else 'p'}"
+    except Exception:
+        return "-"
 
 # ---------------------------------------------------------------------------
 # Model constants — tune these.
@@ -448,9 +477,11 @@ def process_game(game: dict, season: int, day: str, lg: float,
 def render_table(rows: list[dict]) -> str:
     if not rows:
         return "No rows. (Lineups may not be posted yet — try --projected.)"
-    hdr = ["GAME", "TM", "#", "BATTER", "B", "OPP SP", "T", "PA", "HIT%", "xH", "SRC"]
+    hdr = ["GAME", "TIME", "TM", "#", "BATTER", "B", "OPP SP", "T", "PA",
+           "HIT%", "xH", "SRC"]
     body = [[
-        r["game"], r["team"], str(r["slot"]), r["batter"][:20], r["bats"],
+        r["game"], local_time(r.get("game_time_utc", "")),
+        r["team"], str(r["slot"]), r["batter"][:20], r["bats"],
         r["opp_sp"][:18], r["sp_hand"],
         f"{r['pa_vs_sp'] + r['pa_vs_bp']:.1f}",
         f"{r['hit_prob'] * 100:.1f}", f"{r['exp_hits']:.2f}", r["lineup_source"],
@@ -477,7 +508,9 @@ def render_html(rows: list[dict], day: str) -> str:
     def cell(r):
         pct = r["hit_prob"] * 100
         hue = 120 if pct >= 65 else (45 if pct >= 55 else 0)
-        return (f"<tr><td>{r['game']}</td><td>{r['team']}</td><td>{r['slot']}</td>"
+        return (f"<tr><td>{r['game']}</td>"
+                f"<td class='t'>{local_time(r.get('game_time_utc', ''))}</td>"
+                f"<td>{r['team']}</td><td>{r['slot']}</td>"
                 f"<td class='n'>{r['batter']}</td><td>{r['bats']}</td>"
                 f"<td>{r['opp_sp']} ({r['sp_hand']})</td>"
                 f"<td>{r['pa_vs_sp'] + r['pa_vs_bp']:.1f}</td>"
@@ -496,11 +529,13 @@ def render_html(rows: list[dict], day: str) -> str:
      font-size:11px;letter-spacing:.06em;text-transform:uppercase}}
  td{{padding:7px 10px;border-top:1px solid #eee}}
  tr:hover td{{background:#f5f7fa}} td.n{{font-weight:600}}
+ td.t{{color:#555;white-space:nowrap}}
 </style>
 <h1>Batter hit probabilities — {day}</h1>
 <p class="sub">{len(rows)} batters &middot; generated {datetime.now():%Y-%m-%d %H:%M}
+ &middot; times {DISPLAY_TZ.split('/')[-1].replace('_', ' ')}
  &middot; model estimate only, not betting advice</p>
-<table><tr><th>Game</th><th>Tm</th><th>#</th><th>Batter</th><th>B</th>
+<table><tr><th>Game</th><th>Time</th><th>Tm</th><th>#</th><th>Batter</th><th>B</th>
 <th>Opposing SP</th><th>PA</th><th>Hit %</th><th>xH</th><th>Lineup</th></tr>
 {body}</table>"""
 
