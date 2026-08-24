@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mlb_hit_probs.py — daily batter hit-probability scanner.
+mlb_hit_probs.py — daily batter hit-probabilit scanner.
 
 Pulls today's MLB slate from the free MLB Stats API, matches every posted
 lineup against that day's probable/announced starting pitcher, and estimates
