@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-24T16:24:47",
- "overall_70_posted": {
+ "generated": "2026-08-24T19:28:42",
+ "overall_70_all": {
   "n": 0,
   "hits": 0,
   "rate": 0.0,
@@ -8,7 +8,7 @@
   "edge": 0.0,
   "total_hits": 0
  },
- "overall_70_all": {
+ "overall_70_posted": {
   "n": 0,
   "hits": 0,
   "rate": 0.0,
@@ -19,5 +19,6 @@
  "days_tracked": 0,
  "by_bucket": {},
  "cumulative": {},
- "daily": {}
+ "daily": {},
+ "detail": {}
 }
