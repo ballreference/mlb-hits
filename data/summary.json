@@ -1,70 +1,70 @@
 {
- "generated": "2026-08-27T22:41:31",
+ "generated": "2026-08-28T07:46:18",
  "overall_70_all": {
-  "n": 141,
-  "hits": 92,
-  "rate": 0.6524822695035462,
-  "expected": 0.7330588652482273,
-  "edge": -0.08057659574468115,
-  "total_hits": 140
+  "n": 152,
+  "hits": 99,
+  "rate": 0.6513157894736842,
+  "expected": 0.7322486842105266,
+  "edge": -0.08093289473684238,
+  "total_hits": 155
  },
  "overall_70_posted": {
-  "n": 139,
-  "hits": 91,
-  "rate": 0.6546762589928058,
-  "expected": 0.733130935251799,
-  "edge": -0.07845467625899318,
-  "total_hits": 139
+  "n": 150,
+  "hits": 98,
+  "rate": 0.6533333333333333,
+  "expected": 0.732304666666667,
+  "edge": -0.07897133333333367,
+  "total_hits": 154
  },
- "days_tracked": 3,
+ "days_tracked": 4,
  "by_bucket": {
   "70": {
-   "n": 29,
-   "hits": 21,
-   "rate": 0.7241379310344828,
-   "expected": 0.7050379310344826,
-   "edge": 0.01910000000000008,
-   "total_hits": 33
+   "n": 33,
+   "hits": 23,
+   "rate": 0.696969696969697,
+   "expected": 0.7051545454545454,
+   "edge": -0.008184848484848357,
+   "total_hits": 39
   },
   "71": {
-   "n": 26,
-   "hits": 16,
-   "rate": 0.6153846153846154,
-   "expected": 0.7140461538461538,
-   "edge": -0.09866153846153836,
-   "total_hits": 23
+   "n": 28,
+   "hits": 17,
+   "rate": 0.6071428571428571,
+   "expected": 0.714067857142857,
+   "edge": -0.10692499999999987,
+   "total_hits": 24
   },
   "72": {
-   "n": 18,
-   "hits": 12,
-   "rate": 0.6666666666666666,
-   "expected": 0.7245222222222222,
-   "edge": -0.05785555555555552,
-   "total_hits": 15
+   "n": 20,
+   "hits": 14,
+   "rate": 0.7,
+   "expected": 0.724615,
+   "edge": -0.02461500000000001,
+   "total_hits": 17
   },
   "73": {
-   "n": 21,
-   "hits": 13,
-   "rate": 0.6190476190476191,
-   "expected": 0.7339285714285714,
-   "edge": -0.11488095238095236,
-   "total_hits": 20
+   "n": 22,
+   "hits": 14,
+   "rate": 0.6363636363636364,
+   "expected": 0.7340999999999999,
+   "edge": -0.09773636363636355,
+   "total_hits": 24
   },
   "74": {
-   "n": 8,
+   "n": 9,
    "hits": 3,
-   "rate": 0.375,
-   "expected": 0.7453125,
-   "edge": -0.37031250000000004,
+   "rate": 0.3333333333333333,
+   "expected": 0.7456333333333334,
+   "edge": -0.4123,
    "total_hits": 6
   },
   "75": {
-   "n": 17,
-   "hits": 13,
-   "rate": 0.7647058823529411,
-   "expected": 0.7549294117647058,
-   "edge": 0.00977647058823529,
-   "total_hits": 20
+   "n": 18,
+   "hits": 14,
+   "rate": 0.7777777777777778,
+   "expected": 0.7547111111111111,
+   "edge": 0.023066666666666694,
+   "total_hits": 22
   },
   "76": {
    "n": 9,
@@ -109,52 +109,52 @@
  },
  "cumulative": {
   "70": {
-   "n": 141,
-   "hits": 92,
-   "rate": 0.6524822695035462,
-   "expected": 0.7330588652482273,
-   "edge": -0.08057659574468115,
-   "total_hits": 140
+   "n": 152,
+   "hits": 99,
+   "rate": 0.6513157894736842,
+   "expected": 0.7322486842105266,
+   "edge": -0.08093289473684238,
+   "total_hits": 155
   },
   "71": {
-   "n": 112,
-   "hits": 71,
-   "rate": 0.6339285714285714,
-   "expected": 0.7403142857142858,
-   "edge": -0.1063857142857144,
-   "total_hits": 107
+   "n": 119,
+   "hits": 76,
+   "rate": 0.6386554621848739,
+   "expected": 0.7397621848739497,
+   "edge": -0.10110672268907575,
+   "total_hits": 116
   },
   "72": {
-   "n": 86,
-   "hits": 55,
-   "rate": 0.6395348837209303,
-   "expected": 0.7482558139534885,
-   "edge": -0.10872093023255824,
-   "total_hits": 84
+   "n": 91,
+   "hits": 59,
+   "rate": 0.6483516483516484,
+   "expected": 0.7476681318681321,
+   "edge": -0.09931648351648371,
+   "total_hits": 92
   },
   "73": {
-   "n": 68,
-   "hits": 43,
-   "rate": 0.6323529411764706,
-   "expected": 0.7545382352941178,
-   "edge": -0.12218529411764724,
-   "total_hits": 69
+   "n": 71,
+   "hits": 45,
+   "rate": 0.6338028169014085,
+   "expected": 0.754161971830986,
+   "edge": -0.12035915492957752,
+   "total_hits": 75
   },
   "74": {
-   "n": 47,
-   "hits": 30,
-   "rate": 0.6382978723404256,
-   "expected": 0.763746808510638,
-   "edge": -0.12544893617021255,
-   "total_hits": 49
+   "n": 49,
+   "hits": 31,
+   "rate": 0.6326530612244898,
+   "expected": 0.7631693877551017,
+   "edge": -0.13051632653061193,
+   "total_hits": 51
   },
   "75": {
-   "n": 39,
-   "hits": 27,
-   "rate": 0.6923076923076923,
-   "expected": 0.7675282051282049,
-   "edge": -0.07522051282051259,
-   "total_hits": 43
+   "n": 40,
+   "hits": 28,
+   "rate": 0.7,
+   "expected": 0.7671149999999998,
+   "edge": -0.06711499999999981,
+   "total_hits": 45
   },
   "76": {
    "n": 22,
@@ -214,6 +214,14 @@
   }
  },
  "daily": {
+  "2026-08-27": {
+   "n": 11,
+   "hits": 7,
+   "rate": 0.6363636363636364,
+   "expected": 0.7218636363636363,
+   "edge": -0.08549999999999985,
+   "total_hits": 15
+  },
   "2026-08-26": {
    "n": 41,
    "hits": 20,
@@ -240,6 +248,162 @@
   }
  },
  "detail": {
+  "2026-08-27": [
+   {
+    "date": "2026-08-27",
+    "batter": "Andrew Vaughn",
+    "batter_id": 683734,
+    "team": "MIL",
+    "game": "MIL@NYM",
+    "opp_sp": "Sean Manaea",
+    "prob": 0.751,
+    "exp_hits": 1.19,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 2,
+    "got_hit": 1
+   },
+   {
+    "date": "2026-08-27",
+    "batter": "Luis Garc\u00eda Jr.",
+    "batter_id": 671277,
+    "team": "NYY",
+    "game": "HOU@NYY",
+    "opp_sp": "Hayden Wesneski",
+    "prob": 0.7482,
+    "exp_hits": 1.181,
+    "source": "POSTED",
+    "pa": 4,
+    "hits": 0,
+    "got_hit": 0
+   },
+   {
+    "date": "2026-08-27",
+    "batter": "Jackson Chourio",
+    "batter_id": 694192,
+    "team": "MIL",
+    "game": "MIL@NYM",
+    "opp_sp": "Sean Manaea",
+    "prob": 0.7377,
+    "exp_hits": 1.163,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 4,
+    "got_hit": 1
+   },
+   {
+    "date": "2026-08-27",
+    "batter": "Jeremy Pe\u00f1a",
+    "batter_id": 665161,
+    "team": "HOU",
+    "game": "HOU@NYY",
+    "opp_sp": "Gerrit Cole",
+    "prob": 0.7299,
+    "exp_hits": 1.14,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 1,
+    "got_hit": 1
+   },
+   {
+    "date": "2026-08-27",
+    "batter": "Gabriel Moreno",
+    "batter_id": 672515,
+    "team": "AZ",
+    "game": "AZ@SF",
+    "opp_sp": "Landen Roupp",
+    "prob": 0.721,
+    "exp_hits": 1.11,
+    "source": "POSTED",
+    "pa": 4,
+    "hits": 1,
+    "got_hit": 1
+   },
+   {
+    "date": "2026-08-27",
+    "batter": "Yordan Alvarez",
+    "batter_id": 670541,
+    "team": "HOU",
+    "game": "HOU@NYY",
+    "opp_sp": "Gerrit Cole",
+    "prob": 0.7178,
+    "exp_hits": 1.104,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 0,
+    "got_hit": 0
+   },
+   {
+    "date": "2026-08-27",
+    "batter": "Luis Lara",
+    "batter_id": 800325,
+    "team": "MIL",
+    "game": "MIL@NYM",
+    "opp_sp": "Sean Manaea",
+    "prob": 0.7109,
+    "exp_hits": 1.086,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 1,
+    "got_hit": 1
+   },
+   {
+    "date": "2026-08-27",
+    "batter": "Jac Caglianone",
+    "batter_id": 695506,
+    "team": "KC",
+    "game": "KC@TOR",
+    "opp_sp": "Spencer Arrighetti",
+    "prob": 0.7079,
+    "exp_hits": 1.075,
+    "source": "POSTED",
+    "pa": 6,
+    "hits": 5,
+    "got_hit": 1
+   },
+   {
+    "date": "2026-08-27",
+    "batter": "William Contreras",
+    "batter_id": 661388,
+    "team": "MIL",
+    "game": "MIL@NYM",
+    "opp_sp": "Sean Manaea",
+    "prob": 0.7078,
+    "exp_hits": 1.075,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 0,
+    "got_hit": 0
+   },
+   {
+    "date": "2026-08-27",
+    "batter": "Shohei Ohtani",
+    "batter_id": 660271,
+    "team": "LAD",
+    "game": "LAD@ATL",
+    "opp_sp": "Chris Sale",
+    "prob": 0.7055,
+    "exp_hits": 1.075,
+    "source": "POSTED",
+    "pa": 4,
+    "hits": 0,
+    "got_hit": 0
+   },
+   {
+    "date": "2026-08-27",
+    "batter": "Alejandro Kirk",
+    "batter_id": 672386,
+    "team": "TOR",
+    "game": "KC@TOR",
+    "opp_sp": "Noah Cameron",
+    "prob": 0.7028,
+    "exp_hits": 1.058,
+    "source": "POSTED",
+    "pa": 4,
+    "hits": 1,
+    "got_hit": 1
+   }
+  ],
   "2026-08-26": [
    {
     "date": "2026-08-26",
