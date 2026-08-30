@@ -627,9 +627,9 @@ def process_game(game: dict, season: int, day: str, lg: dict,
 # Output
 # ---------------------------------------------------------------------------
 
-MARKETS = [("hit_prob", "1+ H"), ("prob_2h", "2+ H"),
-           ("prob_run", "Run"), ("prob_rbi", "RBI"),
-           ("prob_hrr2", "2+ H+R+RBI"), ("prob_hrr3", "3+ H+R+RBI")]
+MARKETS = [("hit_prob", "1+ H"),
+           ("prob_hrr2", "2+ H+R+RBI"), ("prob_hrr3", "3+ H+R+RBI"),
+           ("prob_2h", "2+ H"), ("prob_run", "Run"), ("prob_rbi", "RBI")]
 
 BOARD_KEYS = {"hit": "hit_prob", "hrr2": "prob_hrr2", "hrr3": "prob_hrr3",
               "h2": "prob_2h", "run": "prob_run", "rbi": "prob_rbi"}
@@ -639,15 +639,15 @@ def render_table(rows: list[dict]) -> str:
     if not rows:
         return "No rows. (Lineups may not be posted yet — try --projected.)"
     hdr = ["GAME", "TIME", "TM", "#", "BATTER", "B", "OPP SP", "T", "PA",
-           "1+H", "2+H", "RUN", "RBI", "HRR2", "HRR3", "SRC"]
+           "1+H", "HRR2", "HRR3", "2+H", "RUN", "RBI", "SRC"]
     body = [[
         r["game"], local_time(r.get("game_time_utc", "")), r["team"],
         str(r["slot"]), r["batter"][:20], r["bats"], r["opp_sp"][:18],
         r["sp_hand"], f"{r['pa']:.1f}",
-        f"{r['hit_prob'] * 100:.1f}", f"{r['prob_2h'] * 100:.1f}",
-        f"{r['prob_run'] * 100:.1f}", f"{r['prob_rbi'] * 100:.1f}",
+        f"{r['hit_prob'] * 100:.1f}",
         f"{r['prob_hrr2'] * 100:.1f}", f"{r['prob_hrr3'] * 100:.1f}",
-        r["lineup_source"],
+        f"{r['prob_2h'] * 100:.1f}", f"{r['prob_run'] * 100:.1f}",
+        f"{r['prob_rbi'] * 100:.1f}", r["lineup_source"],
     ] for r in rows]
     widths = [max(len(hdr[i]), max(len(b[i]) for b in body)) for i in range(len(hdr))]
     out = ["  ".join(h.ljust(widths[i]) for i, h in enumerate(hdr)),
@@ -681,19 +681,19 @@ def _row_html(r: dict) -> str:
             f"<td>{r['opp_sp']} ({r['sp_hand']})</td>"
             f"<td>{r['pa']:.1f}</td>"
             + _prob_cell(r["hit_prob"], 0.70)
+            + _prob_cell(r["prob_hrr2"], 0.55)
+            + _prob_cell(r["prob_hrr3"], 0.30)
             + _prob_cell(r["prob_2h"], 0.28)
             + _prob_cell(r["prob_run"], 0.35)
             + _prob_cell(r["prob_rbi"], 0.35)
-            + _prob_cell(r["prob_hrr2"], 0.55)
-            + _prob_cell(r["prob_hrr3"], 0.30)
             + f"<td>{r['lineup_source']}</td></tr>")
 
 
 def _table(rows: list[dict]) -> str:
     head = ("<table><tr><th>Game</th><th>Time</th><th>Tm</th><th>#</th>"
             "<th>Batter</th><th>B</th><th>Opposing SP</th><th>PA</th>"
-            "<th>1+ H</th><th>2+ H</th><th>Run</th><th>RBI</th>"
-            "<th>2+ HRR</th><th>3+ HRR</th><th>Lineup</th></tr>")
+            "<th>1+ H</th><th>2+ HRR</th><th>3+ HRR</th>"
+            "<th>2+ H</th><th>Run</th><th>RBI</th><th>Lineup</th></tr>")
     return head + "\n".join(_row_html(r) for r in rows) + "</table>"
 
 

@@ -36,9 +36,9 @@ DOCS_DIR = "docs"
 
 # market key -> (probability field, result field, label, headline threshold)
 MARKETS = [
+    ("hit", "hit_prob", "got_hit", "1+ hit", 0.70),
     ("hrr2", "prob_hrr2", "got_hrr2", "2+ hits+runs+RBI", 0.50),
     ("hrr3", "prob_hrr3", "got_hrr3", "3+ hits+runs+RBI", 0.30),
-    ("hit", "hit_prob", "got_hit", "1+ hit", 0.70),
     ("h2", "prob_2h", "got_2h", "2+ hits", 0.30),
     ("run", "prob_run", "got_run", "1+ run", 0.35),
     ("rbi", "prob_rbi", "got_rbi", "1+ RBI", 0.35),
@@ -46,8 +46,8 @@ MARKETS = [
 
 # Markets that also get a day-by-day breakdown, kept fully separate.
 DAY_VIEWS = [
-    ("hrr2", "prob_hrr2", "got_hrr2", "2+ H+R+RBI", 0.50),
     ("hit", "hit_prob", "got_hit", "1+ hit", 0.70),
+    ("hrr2", "prob_hrr2", "got_hrr2", "2+ H+R+RBI", 0.50),
 ]
 
 # 1%-wide buckets for hits; 2%-wide for the noisier markets.
@@ -173,9 +173,9 @@ def grade_pending() -> int:
             continue
         with open(f"{GRADE_DIR}/{day}.json", "w", encoding="utf-8") as fh:
             json.dump(graded, fh, indent=1)
-        sel = [g for g in graded if g["prob_hrr2"] >= 0.50]
-        won = sum(g["got_hrr2"] for g in sel)
-        print(f"  {day}: graded {len(graded)} rows — 50%+ H+R+RBI went "
+        sel = [g for g in graded if g["hit_prob"] >= 0.70]
+        won = sum(g["got_hit"] for g in sel)
+        print(f"  {day}: graded {len(graded)} rows — 70%+ hits went "
               f"{won}/{len(sel)}", file=sys.stderr)
         done += 1
     return done
