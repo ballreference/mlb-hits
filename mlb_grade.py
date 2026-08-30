@@ -173,8 +173,8 @@ def grade_pending() -> int:
             continue
         with open(f"{GRADE_DIR}/{day}.json", "w", encoding="utf-8") as fh:
             json.dump(graded, fh, indent=1)
-        sel = [g for g in graded if g["hit_prob"] >= 0.70]
-        won = sum(g["got_hit"] for g in sel)
+        sel = [g for g in graded if g.get("hit_prob", 0.0) >= 0.70]
+        won = sum(g.get("got_hit", 0) for g in sel)
         print(f"  {day}: graded {len(graded)} rows — 70%+ hits went "
               f"{won}/{len(sel)}", file=sys.stderr)
         done += 1
@@ -186,21 +186,49 @@ def grade_pending() -> int:
 # ---------------------------------------------------------------------------
 
 
+PROB_KEYS = ("hit_prob", "prob_2h", "prob_run", "prob_rbi",
+             "prob_hrr2", "prob_hrr3")
+RESULT_KEYS = ("got_hit", "got_2h", "got_run", "got_rbi",
+               "got_hrr2", "got_hrr3")
+
+
+def _normalize(r: dict) -> dict:
+    """Make a row written by an older version safe for the current code.
+
+    Early versions stored the hit probability as 'prob' and never recorded
+    runs or RBI. Those days still count toward the 1+ hit record; for markets
+    they have no data for, the probability is left at 0 so they never qualify
+    rather than being scored as losses.
+    """
+    if "hit_prob" not in r and "prob" in r:
+        r["hit_prob"] = r["prob"]
+    for k in PROB_KEYS:
+        r.setdefault(k, 0.0)
+    for k in RESULT_KEYS:
+        r.setdefault(k, 0)
+    for k in ("hits", "runs", "rbi", "pa"):
+        r.setdefault(k, 0)
+    if "hrr" not in r:
+        r["hrr"] = r["hits"] + r["runs"] + r["rbi"]
+    r.setdefault("source", "POSTED")
+    return r
+
+
 def load_graded() -> list[dict]:
     rows = []
     for path in sorted(glob.glob(f"{GRADE_DIR}/*.json")):
         try:
             with open(path, encoding="utf-8") as fh:
-                rows.extend(json.load(fh))
-        except Exception:
-            pass
+                rows.extend(_normalize(r) for r in json.load(fh))
+        except Exception as exc:
+            print(f"  ! skipping {path}: {exc}", file=sys.stderr)
     return rows
 
 
 def tally(rows: list[dict], pkey: str, rkey: str) -> dict:
     n = len(rows)
-    hits = sum(r[rkey] for r in rows)
-    exp = sum(r[pkey] for r in rows)
+    hits = sum(r.get(rkey, 0) for r in rows)
+    exp = sum(r.get(pkey, 0.0) for r in rows)
     return {"n": n, "hits": hits, "miss": n - hits,
             "rate": (hits / n) if n else 0.0,
             "expected": (exp / n) if n else 0.0,
@@ -210,20 +238,20 @@ def tally(rows: list[dict], pkey: str, rkey: str) -> dict:
 def market_summary(rows: list[dict], mkey: str, pkey: str,
                    rkey: str, thresh: float) -> dict:
     lo, hi, step = BUCKETS[mkey]
-    qualified = [r for r in rows if r[pkey] >= thresh]
+    qualified = [r for r in rows if r.get(pkey, 0.0) >= thresh]
 
     by_bucket = {}
     for pct in range(lo, hi + 1, step):
         a, b = pct / 100.0, (pct + step) / 100.0
-        sel = [r for r in rows if a <= r[pkey] < b]
+        sel = [r for r in rows if a <= r.get(pkey, 0.0) < b]
         if pct == hi:
-            sel = [r for r in rows if r[pkey] >= a]
+            sel = [r for r in rows if r.get(pkey, 0.0) >= a]
         if sel:
             by_bucket[pct] = tally(sel, pkey, rkey)
 
     cumulative = {}
     for pct in range(lo, hi + 1, step):
-        sel = [r for r in rows if r[pkey] >= pct / 100.0]
+        sel = [r for r in rows if r.get(pkey, 0.0) >= pct / 100.0]
         if len(sel) >= 3:
             cumulative[pct] = tally(sel, pkey, rkey)
 
@@ -240,16 +268,16 @@ def build_summary(rows: list[dict]) -> dict:
         markets[mkey] = market_summary(rows, mkey, pkey, rkey, thresh)
         markets[mkey]["label"] = label
         markets[mkey]["posted"] = tally(
-            [r for r in posted if r[pkey] >= thresh], pkey, rkey)
+            [r for r in posted if r.get(pkey, 0.0) >= thresh], pkey, rkey)
 
     def per_day(pkey, rkey, thresh):
         buckets = {}
         for r in rows:
-            if r[pkey] >= thresh:
+            if r.get(pkey, 0.0) >= thresh:
                 buckets.setdefault(r["date"], []).append(r)
         ordered = sorted(buckets.items(), reverse=True)
         return ({d: tally(v, pkey, rkey) for d, v in ordered},
-                {d: sorted(v, key=lambda r: -r[pkey]) for d, v in ordered[:14]})
+                {d: sorted(v, key=lambda r: -r.get(pkey, 0.0)) for d, v in ordered[:14]})
 
     views = {}
     for mkey, pkey, rkey, label, thresh in DAY_VIEWS:
@@ -328,17 +356,17 @@ def render_results(s: dict) -> str:
         won_label = "WIN" if v["pkey"] == "prob_hrr2" else "HIT"
         out = []
         for i, (day, picks) in enumerate(v["detail"].items()):
-            won = sum(p[rkey] for p in picks)
+            won = sum(p.get(rkey, 0) for p in picks)
             n = len(picks)
             body = "\n".join(
-                f"<tr><td class='n'>{p[pkey] * 100:.1f}%</td>"
+                f"<tr><td class='n'>{p.get(pkey, 0.0) * 100:.1f}%</td>"
                 f"<td class='n'>{p['batter']}</td><td>{p['team']}</td>"
                 f"<td>{p['opp_sp']}</td>"
-                f"<td>{p['hits']}-for-{p['pa']}</td>"
-                f"<td>{p['runs']}</td><td>{p['rbi']}</td>"
+                f"<td>{p.get('hits', 0)}-for-{p.get('pa', 0)}</td>"
+                f"<td>{p.get('runs', 0)}</td><td>{p.get('rbi', 0)}</td>"
                 f"<td class='n'>{p.get('hrr', 0)}</td>"
-                f"<td class='{'y' if p[rkey] else 'x'}'>"
-                f"{won_label if p[rkey] else 'no'}</td></tr>" for p in picks)
+                f"<td class='{'y' if p.get(rkey) else 'x'}'>"
+                f"{won_label if p.get(rkey) else 'no'}</td></tr>" for p in picks)
             out.append(
                 f"<details {'open' if i == 0 else ''}><summary>{day} &mdash; "
                 f"<b>{won}/{n}</b> ({(won / n * 100) if n else 0:.1f}%)</summary>"
