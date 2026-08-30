@@ -1,30 +1,30 @@
 {
- "generated": "2026-08-29 10:14pm EDT",
+ "generated": "2026-08-30 11:08am EDT",
  "overall_70_all": {
-  "n": 199,
-  "hits": 136,
-  "rate": 0.6834170854271356,
-  "expected": 0.732364824120603,
-  "edge": -0.04894773869346734,
-  "total_hits": 211
+  "n": 207,
+  "hits": 141,
+  "rate": 0.6811594202898551,
+  "expected": 0.7326478260869564,
+  "edge": -0.0514884057971014,
+  "total_hits": 218
  },
  "overall_70_posted": {
-  "n": 197,
-  "hits": 135,
-  "rate": 0.6852791878172588,
-  "expected": 0.7324086294416244,
-  "edge": -0.047129441624365526,
-  "total_hits": 210
+  "n": 205,
+  "hits": 140,
+  "rate": 0.6829268292682927,
+  "expected": 0.7326926829268292,
+  "edge": -0.04976585365853658,
+  "total_hits": 217
  },
- "days_tracked": 5,
+ "days_tracked": 6,
  "by_bucket": {
   "70": {
-   "n": 43,
-   "hits": 30,
-   "rate": 0.6976744186046512,
-   "expected": 0.7051325581395348,
-   "edge": -0.007458139534883607,
-   "total_hits": 52
+   "n": 45,
+   "hits": 31,
+   "rate": 0.6888888888888889,
+   "expected": 0.7051333333333332,
+   "edge": -0.016244444444444322,
+   "total_hits": 53
   },
   "71": {
    "n": 33,
@@ -35,28 +35,28 @@
    "total_hits": 28
   },
   "72": {
-   "n": 33,
-   "hits": 24,
-   "rate": 0.7272727272727273,
-   "expected": 0.7249030303030304,
-   "edge": 0.0023696969696969375,
-   "total_hits": 31
+   "n": 34,
+   "hits": 25,
+   "rate": 0.7352941176470589,
+   "expected": 0.724914705882353,
+   "edge": 0.01037941176470583,
+   "total_hits": 32
   },
   "73": {
-   "n": 27,
-   "hits": 18,
-   "rate": 0.6666666666666666,
-   "expected": 0.7345740740740739,
-   "edge": -0.0679074074074073,
-   "total_hits": 31
+   "n": 28,
+   "hits": 19,
+   "rate": 0.6785714285714286,
+   "expected": 0.7344285714285713,
+   "edge": -0.05585714285714273,
+   "total_hits": 33
   },
   "74": {
-   "n": 12,
-   "hits": 6,
-   "rate": 0.5,
-   "expected": 0.7459916666666667,
-   "edge": -0.2459916666666667,
-   "total_hits": 11
+   "n": 13,
+   "hits": 7,
+   "rate": 0.5384615384615384,
+   "expected": 0.7458846153846154,
+   "edge": -0.20742307692307696,
+   "total_hits": 12
   },
   "75": {
    "n": 21,
@@ -67,19 +67,19 @@
    "total_hits": 27
   },
   "76": {
-   "n": 12,
-   "hits": 8,
-   "rate": 0.6666666666666666,
-   "expected": 0.7654249999999999,
-   "edge": -0.09875833333333321,
-   "total_hits": 12
+   "n": 14,
+   "hits": 9,
+   "rate": 0.6428571428571429,
+   "expected": 0.7651642857142856,
+   "edge": -0.1223071428571428,
+   "total_hits": 14
   },
   "77": {
-   "n": 11,
+   "n": 12,
    "hits": 7,
-   "rate": 0.6363636363636364,
-   "expected": 0.7735181818181818,
-   "edge": -0.1371545454545454,
+   "rate": 0.5833333333333334,
+   "expected": 0.774025,
+   "edge": -0.19069166666666662,
    "total_hits": 11
   },
   "78": {
@@ -117,67 +117,67 @@
  },
  "cumulative": {
   "70": {
-   "n": 199,
-   "hits": 136,
-   "rate": 0.6834170854271356,
-   "expected": 0.732364824120603,
-   "edge": -0.04894773869346734,
-   "total_hits": 211
+   "n": 207,
+   "hits": 141,
+   "rate": 0.6811594202898551,
+   "expected": 0.7326478260869564,
+   "edge": -0.0514884057971014,
+   "total_hits": 218
   },
   "71": {
-   "n": 156,
-   "hits": 106,
-   "rate": 0.6794871794871795,
-   "expected": 0.7398711538461538,
-   "edge": -0.06038397435897426,
-   "total_hits": 159
+   "n": 162,
+   "hits": 110,
+   "rate": 0.6790123456790124,
+   "expected": 0.7402907407407407,
+   "edge": -0.061278395061728455,
+   "total_hits": 165
   },
   "72": {
-   "n": 123,
-   "hits": 85,
-   "rate": 0.6910569105691057,
-   "expected": 0.7467796747967479,
-   "edge": -0.055722764227642246,
-   "total_hits": 131
+   "n": 129,
+   "hits": 89,
+   "rate": 0.689922480620155,
+   "expected": 0.7469852713178297,
+   "edge": -0.05706279069767459,
+   "total_hits": 137
   },
   "73": {
-   "n": 90,
-   "hits": 61,
-   "rate": 0.6777777777777778,
-   "expected": 0.754801111111111,
-   "edge": -0.07702333333333324,
-   "total_hits": 100
+   "n": 95,
+   "hits": 64,
+   "rate": 0.6736842105263158,
+   "expected": 0.7548842105263159,
+   "edge": -0.08120000000000013,
+   "total_hits": 105
   },
   "74": {
-   "n": 63,
-   "hits": 43,
-   "rate": 0.6825396825396826,
-   "expected": 0.7634698412698409,
-   "edge": -0.08093015873015835,
-   "total_hits": 69
+   "n": 67,
+   "hits": 45,
+   "rate": 0.6716417910447762,
+   "expected": 0.7634328358208952,
+   "edge": -0.09179104477611906,
+   "total_hits": 72
   },
   "75": {
-   "n": 51,
-   "hits": 37,
-   "rate": 0.7254901960784313,
-   "expected": 0.7675823529411762,
-   "edge": -0.042092156862744735,
-   "total_hits": 58
+   "n": 54,
+   "hits": 38,
+   "rate": 0.7037037037037037,
+   "expected": 0.7676574074074071,
+   "edge": -0.0639537037037034,
+   "total_hits": 60
   },
   "76": {
-   "n": 30,
-   "hits": 20,
-   "rate": 0.6666666666666666,
-   "expected": 0.7766400000000001,
-   "edge": -0.10997333333333342,
-   "total_hits": 31
+   "n": 33,
+   "hits": 21,
+   "rate": 0.6363636363636364,
+   "expected": 0.775939393939394,
+   "edge": -0.13957575757575763,
+   "total_hits": 33
   },
   "77": {
-   "n": 18,
+   "n": 19,
    "hits": 12,
-   "rate": 0.6666666666666666,
-   "expected": 0.7841166666666668,
-   "edge": -0.11745000000000012,
+   "rate": 0.631578947368421,
+   "expected": 0.7838789473684212,
+   "edge": -0.15230000000000013,
    "total_hits": 19
   },
   "78": {
@@ -222,6 +222,14 @@
   }
  },
  "daily": {
+  "2026-08-29": {
+   "n": 8,
+   "hits": 5,
+   "rate": 0.625,
+   "expected": 0.7396875,
+   "edge": -0.11468750000000005,
+   "total_hits": 7
+  },
   "2026-08-28": {
    "n": 47,
    "hits": 37,
@@ -264,6 +272,120 @@
   }
  },
  "detail": {
+  "2026-08-29": [
+   {
+    "date": "2026-08-29",
+    "batter": "Pete Alonso",
+    "batter_id": 624413,
+    "team": "BAL",
+    "game": "BAL@ATH",
+    "opp_sp": "Jack Perkins",
+    "prob": 0.7796,
+    "exp_hits": 1.287,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 0,
+    "got_hit": 0
+   },
+   {
+    "date": "2026-08-29",
+    "batter": "Jeff McNeil",
+    "batter_id": 643446,
+    "team": "ATH",
+    "game": "BAL@ATH",
+    "opp_sp": "Shane Baz",
+    "prob": 0.7669,
+    "exp_hits": 1.241,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 2,
+    "got_hit": 1
+   },
+   {
+    "date": "2026-08-29",
+    "batter": "Luis Arraez",
+    "batter_id": 650333,
+    "team": "PHI",
+    "game": "PHI@LAA",
+    "opp_sp": "Ryan Johnson",
+    "prob": 0.7603,
+    "exp_hits": 1.217,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 0,
+    "got_hit": 0
+   },
+   {
+    "date": "2026-08-29",
+    "batter": "Zach Neto",
+    "batter_id": 687263,
+    "team": "LAA",
+    "game": "PHI@LAA",
+    "opp_sp": "Cristopher S\u00e1nchez",
+    "prob": 0.7446,
+    "exp_hits": 1.178,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 1,
+    "got_hit": 1
+   },
+   {
+    "date": "2026-08-29",
+    "batter": "Henry Bolte",
+    "batter_id": 703607,
+    "team": "ATH",
+    "game": "BAL@ATH",
+    "opp_sp": "Shane Baz",
+    "prob": 0.7305,
+    "exp_hits": 1.139,
+    "source": "POSTED",
+    "pa": 5,
+    "hits": 2,
+    "got_hit": 1
+   },
+   {
+    "date": "2026-08-29",
+    "batter": "Christian Encarnacion-Strand",
+    "batter_id": 687952,
+    "team": "BAL",
+    "game": "BAL@ATH",
+    "opp_sp": "Jack Perkins",
+    "prob": 0.7253,
+    "exp_hits": 1.118,
+    "source": "POSTED",
+    "pa": 4,
+    "hits": 1,
+    "got_hit": 1
+   },
+   {
+    "date": "2026-08-29",
+    "batter": "Vaughn Grissom",
+    "batter_id": 687093,
+    "team": "LAA",
+    "game": "PHI@LAA",
+    "opp_sp": "Cristopher S\u00e1nchez",
+    "prob": 0.7091,
+    "exp_hits": 1.074,
+    "source": "POSTED",
+    "pa": 4,
+    "hits": 0,
+    "got_hit": 0
+   },
+   {
+    "date": "2026-08-29",
+    "batter": "Donovan Walton",
+    "batter_id": 622268,
+    "team": "ATH",
+    "game": "BAL@ATH",
+    "opp_sp": "Shane Baz",
+    "prob": 0.7012,
+    "exp_hits": 1.044,
+    "source": "POSTED",
+    "pa": 4,
+    "hits": 1,
+    "got_hit": 1
+   }
+  ],
   "2026-08-28": [
    {
     "date": "2026-08-28",
