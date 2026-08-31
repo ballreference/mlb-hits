@@ -1,15 +1,15 @@
 {
- "generated": "2026-08-30 11:38pm EDT",
- "days_tracked": 6,
+ "generated": "2026-08-31 1:44am EDT",
+ "days_tracked": 7,
  "markets": {
   "hit": {
    "overall": {
-    "n": 207,
-    "hits": 141,
+    "n": 209,
+    "hits": 143,
     "miss": 66,
-    "rate": 0.6811594202898551,
-    "expected": 0.7326478260869564,
-    "edge": -0.0514884057971014
+    "rate": 0.6842105263157895,
+    "expected": 0.7326602870813396,
+    "edge": -0.048449760765550125
    },
    "threshold": 0.7,
    "step": 1,
@@ -39,12 +39,12 @@
      "edge": 0.01037941176470583
     },
     "73": {
-     "n": 28,
-     "hits": 19,
+     "n": 30,
+     "hits": 21,
      "miss": 9,
-     "rate": 0.6785714285714286,
-     "expected": 0.7344285714285713,
-     "edge": -0.05585714285714273
+     "rate": 0.7,
+     "expected": 0.7343966666666666,
+     "edge": -0.034396666666666555
     },
     "74": {
      "n": 13,
@@ -113,36 +113,36 @@
    },
    "cumulative": {
     "70": {
-     "n": 207,
-     "hits": 141,
+     "n": 209,
+     "hits": 143,
      "miss": 66,
-     "rate": 0.6811594202898551,
-     "expected": 0.7326478260869564,
-     "edge": -0.0514884057971014
+     "rate": 0.6842105263157895,
+     "expected": 0.7326602870813396,
+     "edge": -0.048449760765550125
     },
     "71": {
-     "n": 162,
-     "hits": 110,
+     "n": 164,
+     "hits": 112,
      "miss": 52,
-     "rate": 0.6790123456790124,
-     "expected": 0.7402907407407407,
-     "edge": -0.061278395061728455
+     "rate": 0.6829268292682927,
+     "expected": 0.7402134146341464,
+     "edge": -0.05728658536585372
     },
     "72": {
-     "n": 129,
-     "hits": 89,
+     "n": 131,
+     "hits": 91,
      "miss": 40,
-     "rate": 0.689922480620155,
-     "expected": 0.7469852713178297,
-     "edge": -0.05706279069767459
+     "rate": 0.6946564885496184,
+     "expected": 0.7467862595419849,
+     "edge": -0.05212977099236658
     },
     "73": {
-     "n": 95,
-     "hits": 64,
+     "n": 97,
+     "hits": 66,
      "miss": 31,
-     "rate": 0.6736842105263158,
-     "expected": 0.7548842105263159,
-     "edge": -0.08120000000000013
+     "rate": 0.6804123711340206,
+     "expected": 0.7544525773195878,
+     "edge": -0.07404020618556714
     },
     "74": {
      "n": 67,
@@ -203,127 +203,785 @@
    },
    "label": "1+ hit",
    "posted": {
-    "n": 205,
-    "hits": 140,
+    "n": 207,
+    "hits": 142,
     "miss": 65,
-    "rate": 0.6829268292682927,
-    "expected": 0.7326926829268292,
-    "edge": -0.04976585365853658
+    "rate": 0.6859903381642513,
+    "expected": 0.7327048309178743,
+    "edge": -0.04671449275362311
    }
   },
   "hrr2": {
    "overall": {
-    "n": 0,
-    "hits": 0,
-    "miss": 0,
-    "rate": 0.0,
-    "expected": 0.0,
-    "edge": 0.0
+    "n": 8,
+    "hits": 6,
+    "miss": 2,
+    "rate": 0.75,
+    "expected": 0.5663875,
+    "edge": 0.18361249999999996
    },
    "threshold": 0.5,
    "step": 2,
-   "by_bucket": {},
-   "cumulative": {},
+   "by_bucket": {
+    "44": {
+     "n": 2,
+     "hits": 2,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.44695,
+     "edge": 0.55305
+    },
+    "46": {
+     "n": 2,
+     "hits": 1,
+     "miss": 1,
+     "rate": 0.5,
+     "expected": 0.46185,
+     "edge": 0.03815000000000002
+    },
+    "48": {
+     "n": 5,
+     "hits": 3,
+     "miss": 2,
+     "rate": 0.6,
+     "expected": 0.48701999999999995,
+     "edge": 0.11298000000000004
+    },
+    "50": {
+     "n": 2,
+     "hits": 2,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.50805,
+     "edge": 0.49195
+    },
+    "52": {
+     "n": 1,
+     "hits": 0,
+     "miss": 1,
+     "rate": 0.0,
+     "expected": 0.5354,
+     "edge": -0.5354
+    },
+    "56": {
+     "n": 2,
+     "hits": 1,
+     "miss": 1,
+     "rate": 0.5,
+     "expected": 0.5658,
+     "edge": -0.06579999999999997
+    },
+    "58": {
+     "n": 1,
+     "hits": 1,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.5863,
+     "edge": 0.41369999999999996
+    },
+    "62": {
+     "n": 2,
+     "hits": 2,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.63085,
+     "edge": 0.36915
+    }
+   },
+   "cumulative": {
+    "44": {
+     "n": 17,
+     "hits": 12,
+     "miss": 5,
+     "rate": 0.7058823529411765,
+     "expected": 0.5166941176470589,
+     "edge": 0.18918823529411757
+    },
+    "46": {
+     "n": 15,
+     "hits": 10,
+     "miss": 5,
+     "rate": 0.6666666666666666,
+     "expected": 0.5259933333333333,
+     "edge": 0.14067333333333334
+    },
+    "48": {
+     "n": 13,
+     "hits": 9,
+     "miss": 4,
+     "rate": 0.6923076923076923,
+     "expected": 0.5358615384615384,
+     "edge": 0.15644615384615387
+    },
+    "50": {
+     "n": 8,
+     "hits": 6,
+     "miss": 2,
+     "rate": 0.75,
+     "expected": 0.5663875,
+     "edge": 0.18361249999999996
+    },
+    "52": {
+     "n": 6,
+     "hits": 4,
+     "miss": 2,
+     "rate": 0.6666666666666666,
+     "expected": 0.5858333333333333,
+     "edge": 0.08083333333333331
+    },
+    "54": {
+     "n": 5,
+     "hits": 4,
+     "miss": 1,
+     "rate": 0.8,
+     "expected": 0.59592,
+     "edge": 0.20407999999999998
+    },
+    "56": {
+     "n": 5,
+     "hits": 4,
+     "miss": 1,
+     "rate": 0.8,
+     "expected": 0.59592,
+     "edge": 0.20407999999999998
+    },
+    "58": {
+     "n": 3,
+     "hits": 3,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.616,
+     "edge": 0.38399999999999995
+    }
+   },
    "label": "2+ hits+runs+RBI",
    "posted": {
-    "n": 0,
-    "hits": 0,
-    "miss": 0,
-    "rate": 0.0,
-    "expected": 0.0,
-    "edge": 0.0
+    "n": 8,
+    "hits": 6,
+    "miss": 2,
+    "rate": 0.75,
+    "expected": 0.5663875,
+    "edge": 0.18361249999999996
    }
   },
   "hrr3": {
    "overall": {
-    "n": 0,
-    "hits": 0,
-    "miss": 0,
-    "rate": 0.0,
-    "expected": 0.0,
-    "edge": 0.0
+    "n": 13,
+    "hits": 7,
+    "miss": 6,
+    "rate": 0.5384615384615384,
+    "expected": 0.36232307692307686,
+    "edge": 0.17613846153846158
    },
    "threshold": 0.3,
    "step": 2,
-   "by_bucket": {},
-   "cumulative": {},
+   "by_bucket": {
+    "22": {
+     "n": 1,
+     "hits": 0,
+     "miss": 1,
+     "rate": 0.0,
+     "expected": 0.2369,
+     "edge": -0.2369
+    },
+    "26": {
+     "n": 1,
+     "hits": 1,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.2703,
+     "edge": 0.7297
+    },
+    "28": {
+     "n": 3,
+     "hits": 0,
+     "miss": 3,
+     "rate": 0.0,
+     "expected": 0.28776666666666667,
+     "edge": -0.28776666666666667
+    },
+    "30": {
+     "n": 3,
+     "hits": 1,
+     "miss": 2,
+     "rate": 0.3333333333333333,
+     "expected": 0.31046666666666667,
+     "edge": 0.022866666666666664
+    },
+    "32": {
+     "n": 5,
+     "hits": 2,
+     "miss": 3,
+     "rate": 0.4,
+     "expected": 0.33142,
+     "edge": 0.06858
+    },
+    "36": {
+     "n": 1,
+     "hits": 0,
+     "miss": 1,
+     "rate": 0.0,
+     "expected": 0.3723,
+     "edge": -0.3723
+    },
+    "38": {
+     "n": 1,
+     "hits": 1,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.3809,
+     "edge": 0.6191
+    },
+    "42": {
+     "n": 1,
+     "hits": 1,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.424,
+     "edge": 0.5760000000000001
+    },
+    "46": {
+     "n": 2,
+     "hits": 2,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.47225,
+     "edge": 0.5277499999999999
+    }
+   },
+   "cumulative": {
+    "20": {
+     "n": 18,
+     "hits": 8,
+     "miss": 10,
+     "rate": 0.4444444444444444,
+     "expected": 0.33781666666666665,
+     "edge": 0.10662777777777782
+    },
+    "22": {
+     "n": 18,
+     "hits": 8,
+     "miss": 10,
+     "rate": 0.4444444444444444,
+     "expected": 0.33781666666666665,
+     "edge": 0.10662777777777782
+    },
+    "24": {
+     "n": 17,
+     "hits": 8,
+     "miss": 9,
+     "rate": 0.47058823529411764,
+     "expected": 0.34375294117647054,
+     "edge": 0.12683529411764713
+    },
+    "26": {
+     "n": 17,
+     "hits": 8,
+     "miss": 9,
+     "rate": 0.47058823529411764,
+     "expected": 0.34375294117647054,
+     "edge": 0.12683529411764713
+    },
+    "28": {
+     "n": 16,
+     "hits": 7,
+     "miss": 9,
+     "rate": 0.4375,
+     "expected": 0.34834374999999995,
+     "edge": 0.08915625000000005
+    },
+    "30": {
+     "n": 13,
+     "hits": 7,
+     "miss": 6,
+     "rate": 0.5384615384615384,
+     "expected": 0.36232307692307686,
+     "edge": 0.17613846153846158
+    },
+    "32": {
+     "n": 10,
+     "hits": 6,
+     "miss": 4,
+     "rate": 0.6,
+     "expected": 0.37788000000000005,
+     "edge": 0.22211999999999996
+    },
+    "34": {
+     "n": 5,
+     "hits": 4,
+     "miss": 1,
+     "rate": 0.8,
+     "expected": 0.42434000000000005,
+     "edge": 0.37566
+    },
+    "36": {
+     "n": 5,
+     "hits": 4,
+     "miss": 1,
+     "rate": 0.8,
+     "expected": 0.42434000000000005,
+     "edge": 0.37566
+    },
+    "38": {
+     "n": 4,
+     "hits": 4,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.43735,
+     "edge": 0.56265
+    },
+    "40": {
+     "n": 3,
+     "hits": 3,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.45616666666666666,
+     "edge": 0.5438333333333333
+    },
+    "42": {
+     "n": 3,
+     "hits": 3,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.45616666666666666,
+     "edge": 0.5438333333333333
+    }
+   },
    "label": "3+ hits+runs+RBI",
    "posted": {
-    "n": 0,
-    "hits": 0,
-    "miss": 0,
-    "rate": 0.0,
-    "expected": 0.0,
-    "edge": 0.0
+    "n": 13,
+    "hits": 7,
+    "miss": 6,
+    "rate": 0.5384615384615384,
+    "expected": 0.36232307692307686,
+    "edge": 0.17613846153846158
    }
   },
   "h2": {
    "overall": {
-    "n": 0,
-    "hits": 0,
+    "n": 2,
+    "hits": 2,
     "miss": 0,
-    "rate": 0.0,
-    "expected": 0.0,
-    "edge": 0.0
+    "rate": 1.0,
+    "expected": 0.327,
+    "edge": 0.673
    },
    "threshold": 0.3,
    "step": 2,
-   "by_bucket": {},
-   "cumulative": {},
+   "by_bucket": {
+    "18": {
+     "n": 2,
+     "hits": 1,
+     "miss": 1,
+     "rate": 0.5,
+     "expected": 0.1891,
+     "edge": 0.3109
+    },
+    "20": {
+     "n": 1,
+     "hits": 0,
+     "miss": 1,
+     "rate": 0.0,
+     "expected": 0.2044,
+     "edge": -0.2044
+    },
+    "22": {
+     "n": 5,
+     "hits": 2,
+     "miss": 3,
+     "rate": 0.4,
+     "expected": 0.22799999999999998,
+     "edge": 0.17200000000000001
+    },
+    "26": {
+     "n": 2,
+     "hits": 1,
+     "miss": 1,
+     "rate": 0.5,
+     "expected": 0.26665,
+     "edge": 0.23335
+    },
+    "28": {
+     "n": 1,
+     "hits": 0,
+     "miss": 1,
+     "rate": 0.0,
+     "expected": 0.2828,
+     "edge": -0.2828
+    },
+    "32": {
+     "n": 2,
+     "hits": 2,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.327,
+     "edge": 0.673
+    }
+   },
+   "cumulative": {
+    "18": {
+     "n": 13,
+     "hits": 6,
+     "miss": 7,
+     "rate": 0.46153846153846156,
+     "expected": 0.24559230769230772,
+     "edge": 0.21594615384615382
+    },
+    "20": {
+     "n": 11,
+     "hits": 5,
+     "miss": 6,
+     "rate": 0.45454545454545453,
+     "expected": 0.2558636363636364,
+     "edge": 0.19868181818181815
+    },
+    "22": {
+     "n": 10,
+     "hits": 5,
+     "miss": 5,
+     "rate": 0.5,
+     "expected": 0.26101,
+     "edge": 0.23898999999999998
+    },
+    "24": {
+     "n": 5,
+     "hits": 3,
+     "miss": 2,
+     "rate": 0.6,
+     "expected": 0.29402,
+     "edge": 0.30598000000000003
+    },
+    "26": {
+     "n": 5,
+     "hits": 3,
+     "miss": 2,
+     "rate": 0.6,
+     "expected": 0.29402,
+     "edge": 0.30598000000000003
+    },
+    "28": {
+     "n": 3,
+     "hits": 2,
+     "miss": 1,
+     "rate": 0.6666666666666666,
+     "expected": 0.3122666666666667,
+     "edge": 0.3544
+    }
+   },
    "label": "2+ hits",
    "posted": {
-    "n": 0,
-    "hits": 0,
+    "n": 2,
+    "hits": 2,
     "miss": 0,
-    "rate": 0.0,
-    "expected": 0.0,
-    "edge": 0.0
+    "rate": 1.0,
+    "expected": 0.327,
+    "edge": 0.673
    }
   },
   "run": {
    "overall": {
-    "n": 0,
-    "hits": 0,
-    "miss": 0,
-    "rate": 0.0,
-    "expected": 0.0,
-    "edge": 0.0
+    "n": 5,
+    "hits": 4,
+    "miss": 1,
+    "rate": 0.8,
+    "expected": 0.395,
+    "edge": 0.40499999999999997
    },
    "threshold": 0.35,
    "step": 2,
-   "by_bucket": {},
-   "cumulative": {},
+   "by_bucket": {
+    "24": {
+     "n": 2,
+     "hits": 0,
+     "miss": 2,
+     "rate": 0.0,
+     "expected": 0.25205,
+     "edge": -0.25205
+    },
+    "28": {
+     "n": 4,
+     "hits": 1,
+     "miss": 3,
+     "rate": 0.25,
+     "expected": 0.289675,
+     "edge": -0.039675000000000016
+    },
+    "30": {
+     "n": 4,
+     "hits": 4,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.30955,
+     "edge": 0.69045
+    },
+    "32": {
+     "n": 3,
+     "hits": 1,
+     "miss": 2,
+     "rate": 0.3333333333333333,
+     "expected": 0.33403333333333335,
+     "edge": -0.000699999999999997
+    },
+    "36": {
+     "n": 2,
+     "hits": 1,
+     "miss": 1,
+     "rate": 0.5,
+     "expected": 0.36845,
+     "edge": 0.13155
+    },
+    "40": {
+     "n": 2,
+     "hits": 2,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.40655,
+     "edge": 0.59345
+    },
+    "42": {
+     "n": 1,
+     "hits": 1,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.425,
+     "edge": 0.575
+    }
+   },
+   "cumulative": {
+    "22": {
+     "n": 18,
+     "hits": 10,
+     "miss": 8,
+     "rate": 0.5555555555555556,
+     "expected": 0.3265611111111111,
+     "edge": 0.22899444444444444
+    },
+    "24": {
+     "n": 18,
+     "hits": 10,
+     "miss": 8,
+     "rate": 0.5555555555555556,
+     "expected": 0.3265611111111111,
+     "edge": 0.22899444444444444
+    },
+    "26": {
+     "n": 16,
+     "hits": 10,
+     "miss": 6,
+     "rate": 0.625,
+     "expected": 0.33587500000000003,
+     "edge": 0.28912499999999997
+    },
+    "28": {
+     "n": 16,
+     "hits": 10,
+     "miss": 6,
+     "rate": 0.625,
+     "expected": 0.33587500000000003,
+     "edge": 0.28912499999999997
+    },
+    "30": {
+     "n": 12,
+     "hits": 9,
+     "miss": 3,
+     "rate": 0.75,
+     "expected": 0.351275,
+     "edge": 0.398725
+    },
+    "32": {
+     "n": 8,
+     "hits": 5,
+     "miss": 3,
+     "rate": 0.625,
+     "expected": 0.3721375,
+     "edge": 0.2528625
+    },
+    "34": {
+     "n": 5,
+     "hits": 4,
+     "miss": 1,
+     "rate": 0.8,
+     "expected": 0.395,
+     "edge": 0.40499999999999997
+    },
+    "36": {
+     "n": 5,
+     "hits": 4,
+     "miss": 1,
+     "rate": 0.8,
+     "expected": 0.395,
+     "edge": 0.40499999999999997
+    },
+    "38": {
+     "n": 3,
+     "hits": 3,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.4127,
+     "edge": 0.5873
+    },
+    "40": {
+     "n": 3,
+     "hits": 3,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.4127,
+     "edge": 0.5873
+    }
+   },
    "label": "1+ run",
    "posted": {
-    "n": 0,
-    "hits": 0,
-    "miss": 0,
-    "rate": 0.0,
-    "expected": 0.0,
-    "edge": 0.0
+    "n": 5,
+    "hits": 4,
+    "miss": 1,
+    "rate": 0.8,
+    "expected": 0.395,
+    "edge": 0.40499999999999997
    }
   },
   "rbi": {
    "overall": {
-    "n": 0,
-    "hits": 0,
-    "miss": 0,
-    "rate": 0.0,
-    "expected": 0.0,
-    "edge": 0.0
+    "n": 3,
+    "hits": 2,
+    "miss": 1,
+    "rate": 0.6666666666666666,
+    "expected": 0.3889666666666667,
+    "edge": 0.2777
    },
    "threshold": 0.35,
    "step": 2,
-   "by_bucket": {},
-   "cumulative": {},
+   "by_bucket": {
+    "22": {
+     "n": 1,
+     "hits": 0,
+     "miss": 1,
+     "rate": 0.0,
+     "expected": 0.223,
+     "edge": -0.223
+    },
+    "24": {
+     "n": 2,
+     "hits": 1,
+     "miss": 1,
+     "rate": 0.5,
+     "expected": 0.2471,
+     "edge": 0.2529
+    },
+    "26": {
+     "n": 3,
+     "hits": 2,
+     "miss": 1,
+     "rate": 0.6666666666666666,
+     "expected": 0.2714666666666667,
+     "edge": 0.3952
+    },
+    "28": {
+     "n": 5,
+     "hits": 1,
+     "miss": 4,
+     "rate": 0.2,
+     "expected": 0.29025999999999996,
+     "edge": -0.09025999999999997
+    },
+    "30": {
+     "n": 1,
+     "hits": 1,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.311,
+     "edge": 0.6890000000000001
+    },
+    "32": {
+     "n": 1,
+     "hits": 0,
+     "miss": 1,
+     "rate": 0.0,
+     "expected": 0.3333,
+     "edge": -0.3333
+    },
+    "34": {
+     "n": 3,
+     "hits": 1,
+     "miss": 2,
+     "rate": 0.3333333333333333,
+     "expected": 0.3515,
+     "edge": -0.018166666666666664
+    },
+    "44": {
+     "n": 1,
+     "hits": 1,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.4578,
+     "edge": 0.5422
+    }
+   },
+   "cumulative": {
+    "22": {
+     "n": 17,
+     "hits": 7,
+     "miss": 10,
+     "rate": 0.4117647058823529,
+     "expected": 0.3023235294117647,
+     "edge": 0.10944117647058824
+    },
+    "24": {
+     "n": 16,
+     "hits": 7,
+     "miss": 9,
+     "rate": 0.4375,
+     "expected": 0.30728125,
+     "edge": 0.13021875
+    },
+    "26": {
+     "n": 14,
+     "hits": 6,
+     "miss": 8,
+     "rate": 0.42857142857142855,
+     "expected": 0.3158785714285715,
+     "edge": 0.11269285714285708
+    },
+    "28": {
+     "n": 11,
+     "hits": 4,
+     "miss": 7,
+     "rate": 0.36363636363636365,
+     "expected": 0.3279909090909091,
+     "edge": 0.035645454545454515
+    },
+    "30": {
+     "n": 6,
+     "hits": 3,
+     "miss": 3,
+     "rate": 0.5,
+     "expected": 0.3594333333333333,
+     "edge": 0.14056666666666665
+    },
+    "32": {
+     "n": 5,
+     "hits": 2,
+     "miss": 3,
+     "rate": 0.4,
+     "expected": 0.36912,
+     "edge": 0.03088000000000002
+    },
+    "34": {
+     "n": 4,
+     "hits": 2,
+     "miss": 2,
+     "rate": 0.5,
+     "expected": 0.378075,
+     "edge": 0.121925
+    }
+   },
    "label": "1+ RBI",
    "posted": {
-    "n": 0,
-    "hits": 0,
-    "miss": 0,
-    "rate": 0.0,
-    "expected": 0.0,
-    "edge": 0.0
+    "n": 3,
+    "hits": 2,
+    "miss": 1,
+    "rate": 0.6666666666666666,
+    "expected": 0.3889666666666667,
+    "edge": 0.2777
    }
   }
  },
@@ -334,6 +992,14 @@
    "rkey": "got_hit",
    "thresh": 0.7,
    "daily": {
+    "2026-08-30": {
+     "n": 2,
+     "hits": 2,
+     "miss": 0,
+     "rate": 1.0,
+     "expected": 0.73395,
+     "edge": 0.26605
+    },
     "2026-08-29": {
      "n": 8,
      "hits": 5,
@@ -384,6 +1050,60 @@
     }
    },
    "detail": {
+    "2026-08-30": [
+     {
+      "date": "2026-08-30",
+      "batter": "Elly De La Cruz",
+      "batter_id": 682829,
+      "team": "CIN",
+      "game": "CIN@CHC",
+      "opp_sp": "Shota Imanaga",
+      "source": "POSTED",
+      "hit_prob": 0.7343,
+      "prob_2h": 0.3281,
+      "prob_run": 0.425,
+      "prob_rbi": 0.3454,
+      "prob_hrr2": 0.636,
+      "prob_hrr3": 0.4747,
+      "pa": 4,
+      "hits": 2,
+      "runs": 1,
+      "rbi": 0,
+      "got_hit": 1,
+      "got_2h": 1,
+      "got_run": 1,
+      "got_rbi": 0,
+      "hrr": 3,
+      "got_hrr2": 1,
+      "got_hrr3": 1
+     },
+     {
+      "date": "2026-08-30",
+      "batter": "Sal Stewart",
+      "batter_id": 701398,
+      "team": "CIN",
+      "game": "CIN@CHC",
+      "opp_sp": "Shota Imanaga",
+      "source": "POSTED",
+      "hit_prob": 0.7336,
+      "prob_2h": 0.3259,
+      "prob_run": 0.4035,
+      "prob_rbi": 0.4578,
+      "prob_hrr2": 0.6257,
+      "prob_hrr3": 0.4698,
+      "pa": 5,
+      "hits": 2,
+      "runs": 1,
+      "rbi": 1,
+      "got_hit": 1,
+      "got_2h": 1,
+      "got_run": 1,
+      "got_rbi": 1,
+      "hrr": 4,
+      "got_hrr2": 1,
+      "got_hrr3": 1
+     }
+    ],
     "2026-08-29": [
      {
       "date": "2026-08-29",
@@ -6199,8 +6919,228 @@
    "pkey": "prob_hrr2",
    "rkey": "got_hrr2",
    "thresh": 0.5,
-   "daily": {},
-   "detail": {}
+   "daily": {
+    "2026-08-30": {
+     "n": 8,
+     "hits": 6,
+     "miss": 2,
+     "rate": 0.75,
+     "expected": 0.5663875,
+     "edge": 0.18361249999999996
+    }
+   },
+   "detail": {
+    "2026-08-30": [
+     {
+      "date": "2026-08-30",
+      "batter": "Elly De La Cruz",
+      "batter_id": 682829,
+      "team": "CIN",
+      "game": "CIN@CHC",
+      "opp_sp": "Shota Imanaga",
+      "source": "POSTED",
+      "hit_prob": 0.7343,
+      "prob_2h": 0.3281,
+      "prob_run": 0.425,
+      "prob_rbi": 0.3454,
+      "prob_hrr2": 0.636,
+      "prob_hrr3": 0.4747,
+      "pa": 4,
+      "hits": 2,
+      "runs": 1,
+      "rbi": 0,
+      "got_hit": 1,
+      "got_2h": 1,
+      "got_run": 1,
+      "got_rbi": 0,
+      "hrr": 3,
+      "got_hrr2": 1,
+      "got_hrr3": 1
+     },
+     {
+      "date": "2026-08-30",
+      "batter": "Sal Stewart",
+      "batter_id": 701398,
+      "team": "CIN",
+      "game": "CIN@CHC",
+      "opp_sp": "Shota Imanaga",
+      "source": "POSTED",
+      "hit_prob": 0.7336,
+      "prob_2h": 0.3259,
+      "prob_run": 0.4035,
+      "prob_rbi": 0.4578,
+      "prob_hrr2": 0.6257,
+      "prob_hrr3": 0.4698,
+      "pa": 5,
+      "hits": 2,
+      "runs": 1,
+      "rbi": 1,
+      "got_hit": 1,
+      "got_2h": 1,
+      "got_run": 1,
+      "got_rbi": 1,
+      "hrr": 4,
+      "got_hrr2": 1,
+      "got_hrr3": 1
+     },
+     {
+      "date": "2026-08-30",
+      "batter": "Pete Crow-Armstrong",
+      "batter_id": 691718,
+      "team": "CHC",
+      "game": "CIN@CHC",
+      "opp_sp": "Chase Burns",
+      "source": "POSTED",
+      "hit_prob": 0.6807,
+      "prob_2h": 0.2689,
+      "prob_run": 0.4096,
+      "prob_rbi": 0.3541,
+      "prob_hrr2": 0.5863,
+      "prob_hrr3": 0.424,
+      "pa": 5,
+      "hits": 2,
+      "runs": 2,
+      "rbi": 2,
+      "got_hit": 1,
+      "got_2h": 1,
+      "got_run": 1,
+      "got_rbi": 1,
+      "hrr": 6,
+      "got_hrr2": 1,
+      "got_hrr3": 1
+     },
+     {
+      "date": "2026-08-30",
+      "batter": "Dane Myers",
+      "batter_id": 667472,
+      "team": "CIN",
+      "game": "CIN@CHC",
+      "opp_sp": "Shota Imanaga",
+      "source": "POSTED",
+      "hit_prob": 0.6934,
+      "prob_2h": 0.2828,
+      "prob_run": 0.3395,
+      "prob_rbi": 0.2785,
+      "prob_hrr2": 0.5678,
+      "prob_hrr3": 0.3809,
+      "pa": 5,
+      "hits": 1,
+      "runs": 1,
+      "rbi": 1,
+      "got_hit": 1,
+      "got_2h": 0,
+      "got_run": 1,
+      "got_rbi": 1,
+      "hrr": 3,
+      "got_hrr2": 1,
+      "got_hrr3": 1
+     },
+     {
+      "date": "2026-08-30",
+      "batter": "Seiya Suzuki",
+      "batter_id": 673548,
+      "team": "CHC",
+      "game": "CIN@CHC",
+      "opp_sp": "Chase Burns",
+      "source": "POSTED",
+      "hit_prob": 0.6774,
+      "prob_2h": 0.2644,
+      "prob_run": 0.3657,
+      "prob_rbi": 0.355,
+      "prob_hrr2": 0.5638,
+      "prob_hrr3": 0.3723,
+      "pa": 5,
+      "hits": 0,
+      "runs": 0,
+      "rbi": 0,
+      "got_hit": 0,
+      "got_2h": 0,
+      "got_run": 0,
+      "got_rbi": 0,
+      "hrr": 0,
+      "got_hrr2": 0,
+      "got_hrr3": 0
+     },
+     {
+      "date": "2026-08-30",
+      "batter": "Pedro Ram\u00edrez",
+      "batter_id": 699393,
+      "team": "CHC",
+      "game": "CIN@CHC",
+      "opp_sp": "Chase Burns",
+      "source": "POSTED",
+      "hit_prob": 0.661,
+      "prob_2h": 0.2398,
+      "prob_run": 0.3379,
+      "prob_rbi": 0.2916,
+      "prob_hrr2": 0.5354,
+      "prob_hrr3": 0.3318,
+      "pa": 4,
+      "hits": 0,
+      "runs": 0,
+      "rbi": 0,
+      "got_hit": 0,
+      "got_2h": 0,
+      "got_run": 0,
+      "got_rbi": 0,
+      "hrr": 0,
+      "got_hrr2": 0,
+      "got_hrr3": 0
+     },
+     {
+      "date": "2026-08-30",
+      "batter": "Alex Bregman",
+      "batter_id": 608324,
+      "team": "CHC",
+      "game": "CIN@CHC",
+      "opp_sp": "Chase Burns",
+      "source": "POSTED",
+      "hit_prob": 0.6441,
+      "prob_2h": 0.2297,
+      "prob_run": 0.3036,
+      "prob_rbi": 0.2991,
+      "prob_hrr2": 0.5105,
+      "prob_hrr3": 0.3145,
+      "pa": 4,
+      "hits": 1,
+      "runs": 1,
+      "rbi": 0,
+      "got_hit": 1,
+      "got_2h": 0,
+      "got_run": 1,
+      "got_rbi": 0,
+      "hrr": 2,
+      "got_hrr2": 1,
+      "got_hrr3": 0
+     },
+     {
+      "date": "2026-08-30",
+      "batter": "Ian Happ",
+      "batter_id": 664023,
+      "team": "CHC",
+      "game": "CIN@CHC",
+      "opp_sp": "Chase Burns",
+      "source": "POSTED",
+      "hit_prob": 0.5986,
+      "prob_2h": 0.1899,
+      "prob_run": 0.3712,
+      "prob_rbi": 0.2903,
+      "prob_hrr2": 0.5056,
+      "prob_hrr3": 0.3359,
+      "pa": 4,
+      "hits": 2,
+      "runs": 2,
+      "rbi": 0,
+      "got_hit": 1,
+      "got_2h": 1,
+      "got_run": 1,
+      "got_rbi": 0,
+      "hrr": 4,
+      "got_hrr2": 1,
+      "got_hrr3": 1
+     }
+    ]
+   }
   }
  }
 }
