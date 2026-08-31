@@ -831,6 +831,34 @@ def selftest() -> int:
 # ---------------------------------------------------------------------------
 
 
+def merge_snapshot(path: str, rows: list[dict]) -> list[dict]:
+    """Combine today's rows with whatever is already saved for the day.
+
+    Runs later in the day skip games that have gone final, so a plain
+    overwrite would throw away every pick made earlier. Keep the first
+    prediction for each batter — that's the number that was actually on the
+    board — but let a real posted lineup replace an earlier projected one.
+    """
+    try:
+        with open(path, encoding="utf-8") as fh:
+            existing = json.load(fh)
+    except Exception:
+        return rows
+    if not isinstance(existing, list):
+        return rows
+
+    merged = {(r.get("batter_id"), r.get("game")): r for r in existing}
+    for r in rows:
+        key = (r.get("batter_id"), r.get("game"))
+        prev = merged.get(key)
+        if prev is None:
+            merged[key] = r
+        elif (prev.get("lineup_source") == "PROJ"
+              and r.get("lineup_source") == "POSTED"):
+            merged[key] = r
+    return list(merged.values())
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Daily MLB batter prop probabilities.")
     ap.add_argument("--date", default=None, help="YYYY-MM-DD")
@@ -915,6 +943,14 @@ def main() -> int:
     elif args.format == "csv":
         text = render_csv(rows)
     elif args.format == "json":
+        if args.out:
+            path = os.path.expanduser(args.out)
+            before = len(rows)
+            rows = merge_snapshot(path, rows)
+            if len(rows) != before:
+                print(f"Merged with existing snapshot: {before} new, "
+                      f"{len(rows)} total for the day", file=sys.stderr)
+            rows.sort(key=lambda r: r.get(board_key, 0), reverse=True)
         text = json.dumps(rows, indent=2)
     else:
         label = dict(MARKETS).get(board_key, "1+ H")
