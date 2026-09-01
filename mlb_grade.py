@@ -51,9 +51,9 @@ DAY_VIEWS = [
 ]
 
 # 1%-wide buckets for hits; 2%-wide for the noisier markets.
-BUCKETS = {"hit": (70, 90, 1), "h2": (18, 44, 2),
-           "run": (22, 48, 2), "rbi": (22, 48, 2),
-           "hrr2": (44, 74, 2), "hrr3": (20, 50, 2)}
+BUCKETS = {"hit": (52, 88, 2), "h2": (8, 44, 2),
+           "run": (14, 48, 2), "rbi": (14, 48, 2),
+           "hrr2": (20, 76, 4), "hrr3": (8, 52, 4)}
 
 
 # ---------------------------------------------------------------------------
@@ -135,20 +135,28 @@ def grade_day(day: str, rows: list[dict]) -> list[dict] | None:
     return graded
 
 
-def backfill(days_back: int, anchor: str) -> None:
-    """Rebuild prediction snapshots for recent days that were never saved."""
+def backfill(days_back: int, anchor: str, asof: bool = True,
+             skip_existing: bool = True) -> None:
+    """Rebuild prediction snapshots for past days.
+
+    With asof=True (the default) each day is scored using only stats from
+    before that day, so the result is an honest backtest rather than a replay
+    that already knows how the games went.
+    """
     here = os.path.dirname(os.path.abspath(__file__))
     for i in range(1, days_back + 1):
         day = (_date.fromisoformat(anchor) - timedelta(days=i)).isoformat()
         path = f"{PRED_DIR}/{day}.json"
-        if os.path.exists(path):
+        if skip_existing and os.path.exists(path):
             continue
-        print(f"  backfilling {day}...", file=sys.stderr)
-        subprocess.run(
-            [sys.executable, os.path.join(here, "mlb_hit_probs.py"),
-             "--date", day, "--min-prob", "0.70",
-             "--format", "json", "--out", path],
-            check=False)
+        print(f"  building {day}{' (as-of)' if asof else ''}...",
+              file=sys.stderr)
+        cmd = [sys.executable, os.path.join(here, "mlb_hit_probs.py"),
+               "--date", day, "--min-prob", "0.70", "--keep-all",
+               "--format", "json", "--out", path]
+        if asof:
+            cmd.append("--asof")
+        subprocess.run(cmd, check=False)
 
 
 def grade_pending() -> int:
@@ -255,8 +263,23 @@ def market_summary(rows: list[dict], mkey: str, pkey: str,
         if len(sel) >= 3:
             cumulative[pct] = tally(sel, pkey, rkey)
 
+    deciles = []
+    scored = sorted((r for r in rows if r.get(pkey, 0.0) > 0),
+                    key=lambda r: r.get(pkey, 0.0))
+    if len(scored) >= 50:
+        size = len(scored) // 10
+        for i in range(10):
+            chunk = scored[i * size:(i + 1) * size if i < 9 else len(scored)]
+            if not chunk:
+                continue
+            t = tally(chunk, pkey, rkey)
+            t["lo"] = chunk[0].get(pkey, 0.0)
+            t["hi"] = chunk[-1].get(pkey, 0.0)
+            deciles.append(t)
+
     return {"overall": tally(qualified, pkey, rkey),
-            "threshold": thresh, "step": step,
+            "threshold": thresh, "step": step, "deciles": deciles,
+            "graded_n": len(scored),
             "by_bucket": by_bucket, "cumulative": cumulative}
 
 
@@ -340,7 +363,34 @@ def _market_block(m: dict, mkey: str) -> str:
         f"{m['posted']['hits']}/{m['posted']['n']} "
         f"({m['posted']['rate'] * 100:.1f}%).</p>")
     fmt = "{}%" if step == 1 else "{}%+"
-    return (cards
+    dec = ""
+    if m.get("deciles"):
+        rows_h = []
+        for i, t in enumerate(m["deciles"], 1):
+            bar = (f"<div style='background:#e5e7eb;border-radius:3px;height:8px;"
+                   f"width:70px'><div style='background:#2563eb;height:8px;"
+                   f"border-radius:3px;width:{t['rate'] * 70:.0f}px'></div></div>")
+            rows_h.append(
+                f"<tr><td class='n'>{i}</td>"
+                f"<td>{t['lo'] * 100:.0f}&ndash;{t['hi'] * 100:.0f}%</td>"
+                f"<td class='y'>{t['hits']}</td><td class='x'>{t['miss']}</td>"
+                f"<td>{t['n']}</td><td class='n'>{t['rate'] * 100:.1f}%</td>"
+                f"<td>{t['expected'] * 100:.1f}%</td>"
+                f"<td>{_edge(t['edge'])}</td><td>{bar}</td></tr>")
+        first, last = m["deciles"][0], m["deciles"][-1]
+        spread = (last["rate"] - first["rate"]) * 100
+        verdict = ("separates well" if spread >= 12 else
+                   "some separation" if spread >= 6 else
+                   "little separation &mdash; not ranking hitters")
+        dec = (f"<h3>Ranking check &mdash; all {m['graded_n']} graded picks, "
+               f"split into ten equal groups</h3>"
+               f"<p class='sub'>If the model can rank, group 10 should hit far "
+               f"more often than group 1. Spread here: "
+               f"<b>{spread:+.1f} points</b> &mdash; {verdict}.</p>"
+               f"<table><tr><th>Grp</th><th>Range</th><th>Hit</th><th>Miss</th>"
+               f"<th>Total</th><th>Actual</th><th>Predicted</th><th>Diff</th>"
+               f"<th></th></tr>{''.join(rows_h)}</table>")
+    return (cards + dec
             + f"<h3>Each bucket</h3>{_bucket_table(m['by_bucket'], fmt)}"
             + f"<h3>Cumulative</h3>{_bucket_table(m['cumulative'], '&ge;{}%')}")
 
@@ -443,14 +493,21 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--today", help="path to today's prediction JSON")
     ap.add_argument("--date", help="date of that JSON, YYYY-MM-DD")
-    ap.add_argument("--backfill", type=int, default=0, metavar="N")
+    ap.add_argument("--backfill", type=int, default=0, metavar="N",
+                    help="build snapshots for the last N days (point-in-time)")
+    ap.add_argument("--no-asof", action="store_true",
+                    help="backfill using today's stats (leaks the future; "
+                         "only for filling a gap you will not backtest on)")
+    ap.add_argument("--rebuild", action="store_true",
+                    help="overwrite existing snapshots during backfill")
     args = ap.parse_args()
 
     os.makedirs(DOCS_DIR, exist_ok=True)
     os.makedirs(PRED_DIR, exist_ok=True)
 
     if args.backfill:
-        backfill(args.backfill, args.date or now_local_str()[:10])
+        backfill(args.backfill, args.date or now_local_str()[:10],
+                 asof=not args.no_asof, skip_existing=not args.rebuild)
 
     if args.today and os.path.exists(args.today):
         with open(args.today, encoding="utf-8") as fh:

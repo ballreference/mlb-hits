@@ -139,6 +139,18 @@ def local_time(iso_utc: str) -> str:
 
 _cache: dict[str, dict] = {}
 
+# When set to a date string, every stat lookup is restricted to games played
+# BEFORE that date, so a backtest only sees what was knowable at the time.
+ASOF: str | None = None
+
+
+def _asof_window(season: int) -> tuple[str, str] | None:
+    """(start, end) covering the season up to the day before ASOF."""
+    if not ASOF:
+        return None
+    end = (datetime.strptime(ASOF, "%Y-%m-%d").date() - timedelta(days=1))
+    return f"{season}-03-01", end.isoformat()
+
 
 def api_get(path: str, params: dict | None = None, retries: int = 3) -> dict:
     qs = urllib.parse.urlencode(params or {}, doseq=True)
@@ -323,9 +335,15 @@ def get_schedule(day: str) -> list[dict]:
 
 
 def league_rates(season: int) -> dict:
-    data = api_get("teams/stats", {
-        "stats": "season", "group": "hitting", "season": season, "sportId": 1,
-    })
+    win = _asof_window(season)
+    if win:
+        data = api_get("teams/stats", {
+            "stats": "byDateRange", "group": "hitting", "season": season,
+            "sportId": 1, "startDate": win[0], "endDate": win[1]})
+    else:
+        data = api_get("teams/stats", {
+            "stats": "season", "group": "hitting", "season": season,
+            "sportId": 1})
     tot = {k: 0.0 for k in ("h", "pa", "ob", "hr", "rbi", "r")}
     for block in data.get("stats", []):
         for sp in block.get("splits", []):
@@ -355,9 +373,14 @@ def person(pid: int) -> dict:
 
 
 def _season_stat(pid: int, season: int, group: str) -> dict:
-    d = api_get(f"people/{pid}/stats",
-                {"stats": "season", "group": group, "season": season,
-                 "gameType": "R"})
+    win = _asof_window(season)
+    if win:
+        params = {"stats": "byDateRange", "group": group, "season": season,
+                  "gameType": "R", "startDate": win[0], "endDate": win[1]}
+    else:
+        params = {"stats": "season", "group": group, "season": season,
+                  "gameType": "R"}
+    d = api_get(f"people/{pid}/stats", params)
     for block in d.get("stats", []):
         for sp in block.get("splits", []):
             return sp.get("stat", {})
@@ -365,6 +388,11 @@ def _season_stat(pid: int, season: int, group: str) -> dict:
 
 
 def _platoon(pid: int, season: int, group: str) -> dict:
+    if ASOF:
+        # The API only exposes platoon splits for a whole season, which would
+        # include games after the backtest date. Rather than leak the future,
+        # go without the split — it is a shrunk secondary adjustment anyway.
+        return {}
     d = api_get(f"people/{pid}/stats", {
         "stats": "statSplits", "group": group, "season": season,
         "gameType": "R", "sitCodes": "vl,vr",
@@ -379,7 +407,7 @@ def _platoon(pid: int, season: int, group: str) -> dict:
 
 
 def hitting_recent(pid: int, season: int, day: str, lookback: int = 21) -> dict:
-    end = datetime.strptime(day, "%Y-%m-%d").date()
+    end = datetime.strptime(day, "%Y-%m-%d").date() - timedelta(days=1)
     start = end - timedelta(days=lookback)
     d = api_get(f"people/{pid}/stats", {
         "stats": "byDateRange", "group": "hitting", "season": season,
@@ -392,6 +420,18 @@ def hitting_recent(pid: int, season: int, day: str, lookback: int = 21) -> dict:
 
 
 def team_pitching(team_id: int, season: int) -> dict:
+    win = _asof_window(season)
+    if win:
+        d = api_get(f"teams/{team_id}/stats",
+                    {"stats": "byDateRange", "group": "pitching",
+                     "season": season, "gameType": "R",
+                     "startDate": win[0], "endDate": win[1]})
+        for block in d.get("stats", []):
+            for sp in block.get("splits", []):
+                st = sp.get("stat", {})
+                if pitcher_bf(st) > 0:
+                    return st
+        return {}          # fall back to the league prior rather than leak
     d = api_get(f"teams/{team_id}/stats",
                 {"stats": "season", "group": "pitching", "season": season,
                  "gameType": "R"})
@@ -870,6 +910,9 @@ def main() -> int:
                     help="which market drives the main board and --min-prob")
     ap.add_argument("--min-prob", type=float, default=0.0,
                     help="probability floor for the main board, e.g. 0.70")
+    ap.add_argument("--keep-all", action="store_true",
+                    help="save every batter to the output; --min-prob then "
+                         "only controls what the board displays")
     ap.add_argument("--top-per-market", type=int, default=20,
                     help="also keep the top N for 2+H, run and RBI (0 to skip)")
     ap.add_argument("--format", choices=["table", "csv", "json", "html"],
@@ -878,6 +921,9 @@ def main() -> int:
     ap.add_argument("--projected", action="store_true")
     ap.add_argument("--no-form", action="store_true")
     ap.add_argument("--no-park", action="store_true")
+    ap.add_argument("--asof", action="store_true",
+                    help="backtest mode: use only stats from before --date, "
+                         "so the model cannot see the games it is predicting")
     ap.add_argument("--selftest", action="store_true")
     args = ap.parse_args()
 
@@ -886,6 +932,12 @@ def main() -> int:
 
     day = args.date or now_local_str()[:10]
     season = args.season or int(day[:4])
+
+    if args.asof:
+        global ASOF
+        ASOF = day
+        print(f"AS-OF MODE: stats limited to games before {day}; "
+              f"platoon splits disabled", file=sys.stderr)
 
     games = get_schedule(day)
     if args.team:
@@ -921,7 +973,7 @@ def main() -> int:
     for r in rows:
         r["_main"] = r.get(board_key, 0) >= args.min_prob
 
-    if args.min_prob > 0 or args.top_per_market:
+    if not args.keep_all and (args.min_prob > 0 or args.top_per_market):
         keep = {i for i, r in enumerate(rows) if r["_main"]}
         if args.top_per_market:
             for key, _ in MARKETS:
