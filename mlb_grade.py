@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+"""
+mlb_grade.py — score past prop predictions against real box scores.
+
+Grades four markets: 1+ hit, 2+ hits, 1+ run scored, 1+ RBI. Keeps a running
+record per market and per probability bucket, and renders today's board so the
+slate only has to be pulled once.
+
+    data/predictions/YYYY-MM-DD.json   snapshot of that day's board
     data/graded/YYYY-MM-DD.json        what actually happened
     docs/index.html                    today's board
     docs/results.html                  the running record
@@ -135,19 +144,33 @@ def backfill(days_back: int, anchor: str, asof: bool = True,
     that already knows how the games went.
     """
     here = os.path.dirname(os.path.abspath(__file__))
+    built = skipped = 0
+    first = (_date.fromisoformat(anchor) - timedelta(days=days_back)).isoformat()
+    last = (_date.fromisoformat(anchor) - timedelta(days=1)).isoformat()
+    print(f"Backfill: checking {days_back} day(s), {first} through {last}"
+          f"{' (point-in-time)' if asof else ' (LEAKS FUTURE STATS)'}",
+          file=sys.stderr)
+
     for i in range(1, days_back + 1):
         day = (_date.fromisoformat(anchor) - timedelta(days=i)).isoformat()
         path = f"{PRED_DIR}/{day}.json"
         if skip_existing and os.path.exists(path):
+            skipped += 1
             continue
-        print(f"  building {day}{' (as-of)' if asof else ''}...",
-              file=sys.stderr)
+        print(f"  building {day}...", file=sys.stderr)
         cmd = [sys.executable, os.path.join(here, "mlb_hit_probs.py"),
                "--date", day, "--min-prob", "0.70", "--keep-all",
                "--format", "json", "--out", path]
         if asof:
             cmd.append("--asof")
         subprocess.run(cmd, check=False)
+        built += 1
+
+    print(f"Backfill done: {built} built, {skipped} already had snapshots.",
+          file=sys.stderr)
+    if built == 0 and skipped:
+        print(f"  Nothing new — every day back to {first} is already saved. "
+              f"Use a larger --backfill to reach further back.", file=sys.stderr)
 
 
 def grade_pending() -> int:
