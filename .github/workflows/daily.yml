@@ -7,6 +7,9 @@ on:
       backfill:
         description: 'Days to backtest (0 for a normal run)'
         default: '0'
+concurrency:
+  group: mlb-hits
+  cancel-in-progress: false
 permissions:
   contents: write
 jobs:
@@ -28,4 +31,9 @@ jobs:
           git config user.email "actions@github.com"
           git add -A docs data
           git commit -m "Update" || exit 0
-          git push
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push attempt $i failed, retrying..."
+            sleep $((RANDOM % 20 + 5))
+          done
+          echo "push failed after 5 attempts"; exit 1
