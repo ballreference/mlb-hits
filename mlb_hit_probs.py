@@ -958,7 +958,9 @@ def main() -> int:
     for g in games:
         away = g["teams"]["away"]["team"].get("abbreviation", "?")
         home = g["teams"]["home"]["team"].get("abbreviation", "?")
-        if g.get("status", {}).get("abstractGameState") == "Final":
+        if not ASOF and g.get("status", {}).get("abstractGameState") == "Final":
+            # Live runs skip games already played. A backtest is scoring past
+            # days, so there every game is final and must be processed.
             print(f"  {away}@{home}: final, skipping", file=sys.stderr)
             continue
         try:
