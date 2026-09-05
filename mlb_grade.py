@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-"""
-mlb_grade.py — score past prop predictions against real box scores.
-
-Grades four markets: 1+ hit, 2+ hits, 1+ run scored, 1+ RBI. Keeps a running
-record per market and per probability bucket, and renders today's board so the
-slate only has to be pulled once.
-
-    data/predictions/YYYY-MM-DD.json   snapshot of that day's board
     data/graded/YYYY-MM-DD.json        what actually happened
     docs/index.html                    today's board
     docs/results.html                  the running record
