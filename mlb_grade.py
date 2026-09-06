@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import glob
 import json
+import math
 import os
 import subprocess
 import sys
@@ -235,6 +236,10 @@ def grade_pending() -> int:
 
 PROB_KEYS = ("hit_prob", "prob_2h", "prob_run", "prob_rbi",
              "prob_hrr2", "prob_hrr3")
+
+# Minimum graded picks before a market's calibration is trusted.
+MIN_CALIBRATION_N = 400
+CALIBRATION_PATH = "data/calibration.json"
 RESULT_KEYS = ("got_hit", "got_2h", "got_run", "got_rbi",
                "got_hrr2", "got_hrr3")
 
@@ -350,6 +355,79 @@ def build_summary(rows: list[dict]) -> dict:
     return {"generated": now_local_str(),
             "days_tracked": len({r["date"] for r in rows}),
             "markets": markets, "views": views}
+
+
+# ---------------------------------------------------------------------------
+# Calibration
+# ---------------------------------------------------------------------------
+
+
+def _logit(p: float) -> float:
+    p = min(max(p, 1e-6), 1 - 1e-6)
+    return math.log(p / (1 - p))
+
+
+def _sigmoid(z: float) -> float:
+    if z >= 0:
+        return 1.0 / (1.0 + math.exp(-z))
+    e = math.exp(z)
+    return e / (1.0 + e)
+
+
+def fit_platt(pairs: list[tuple[float, int]], iters: int = 4000,
+              lr: float = 0.05) -> tuple[float, float]:
+    """Fit p_true = sigmoid(a * logit(p_raw) + b) by gradient descent.
+
+    Two parameters only. `a` under 1 pulls extreme predictions toward the
+    middle, which is the fix for a model that is confidently wrong at the
+    edges; `b` shifts the overall level. Because the mapping is monotonic,
+    it changes the numbers without disturbing the ranking.
+    """
+    if len(pairs) < 20:
+        return 1.0, 0.0
+    zs = [(_logit(p), y) for p, y in pairs]
+    n = len(zs)
+    a, b = 1.0, 0.0
+    for i in range(iters):
+        ga = gb = 0.0
+        for z, y in zs:
+            err = _sigmoid(a * z + b) - y
+            ga += err * z
+            gb += err
+        a -= lr * ga / n
+        b -= lr * gb / n
+        if i % 500 == 499:
+            lr *= 0.7
+    return a, b
+
+
+def fit_calibration(rows: list[dict]) -> dict:
+    """Learn a correction per market from everything graded so far."""
+    out = {}
+    for mkey, pkey, rkey, label, _ in MARKETS:
+        pairs = []
+        for r in rows:
+            # Always fit on the RAW model output. Once calibration is live the
+            # stored probability is already corrected; fitting on that would
+            # apply the correction twice.
+            raw = r.get(pkey + "_raw")
+            if raw is None:
+                raw = r.get(pkey)
+            if raw is None or raw <= 0:
+                continue
+            pairs.append((float(raw), int(r.get(rkey, 0))))
+        if len(pairs) < MIN_CALIBRATION_N:
+            continue
+        a, b = fit_platt(pairs)
+        before = sum(p for p, _ in pairs) / len(pairs)
+        after = sum(_sigmoid(a * _logit(p) + b) for p, _ in pairs) / len(pairs)
+        actual = sum(y for _, y in pairs) / len(pairs)
+        out[pkey] = {"a": round(a, 5), "b": round(b, 5), "n": len(pairs),
+                     "label": label,
+                     "mean_raw": round(before, 4),
+                     "mean_calibrated": round(after, 4),
+                     "mean_actual": round(actual, 4)}
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -558,7 +636,19 @@ def main() -> int:
     print("Grading past days...", file=sys.stderr)
     grade_pending()
 
-    summary = build_summary(load_graded())
+    graded = load_graded()
+    calib = fit_calibration(graded)
+    if calib:
+        with open(CALIBRATION_PATH, "w", encoding="utf-8") as fh:
+            json.dump(calib, fh, indent=1)
+        print("Calibration refit:", file=sys.stderr)
+        for k, c in calib.items():
+            print(f"  {c['label']:20} a={c['a']:.3f} b={c['b']:+.3f}  "
+                  f"mean {c['mean_raw']*100:.1f}% -> {c['mean_calibrated']*100:.1f}% "
+                  f"(actual {c['mean_actual']*100:.1f}%)  n={c['n']}",
+                  file=sys.stderr)
+
+    summary = build_summary(graded)
     with open("data/summary.json", "w", encoding="utf-8") as fh:
         json.dump(summary, fh, indent=1)
     with open(f"{DOCS_DIR}/results.html", "w", encoding="utf-8") as fh:
