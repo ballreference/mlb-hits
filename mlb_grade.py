@@ -200,8 +200,14 @@ def grade_pending() -> int:
         day = os.path.basename(path)[:-5]
         if day >= today:
             continue
-        if os.path.exists(f"{GRADE_DIR}/{day}.json"):
+        graded_path = f"{GRADE_DIR}/{day}.json"
+        if _has_rows(graded_path):
             continue
+        if not _has_rows(path):
+            continue  # no picks to grade for this day
+        if os.path.exists(graded_path):
+            print(f"  {day}: previous grading was empty, redoing",
+                  file=sys.stderr)
         try:
             with open(path, encoding="utf-8") as fh:
                 rows = json.load(fh)
