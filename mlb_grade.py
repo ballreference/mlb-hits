@@ -135,6 +135,20 @@ def grade_day(day: str, rows: list[dict]) -> list[dict] | None:
     return graded
 
 
+def _has_rows(path: str) -> bool:
+    """True only if the snapshot exists AND actually contains picks.
+
+    A day that was built before a bug fix can be sitting there with zero rows.
+    Those should be rebuilt, not skipped.
+    """
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+        return isinstance(data, list) and len(data) > 0
+    except Exception:
+        return False
+
+
 def backfill(days_back: int, anchor: str, asof: bool = True,
              skip_existing: bool = True) -> None:
     """Rebuild prediction snapshots for past days.
@@ -144,7 +158,7 @@ def backfill(days_back: int, anchor: str, asof: bool = True,
     that already knows how the games went.
     """
     here = os.path.dirname(os.path.abspath(__file__))
-    built = skipped = 0
+    built = skipped = empty = 0
     first = (_date.fromisoformat(anchor) - timedelta(days=days_back)).isoformat()
     last = (_date.fromisoformat(anchor) - timedelta(days=1)).isoformat()
     print(f"Backfill: checking {days_back} day(s), {first} through {last}"
@@ -154,10 +168,15 @@ def backfill(days_back: int, anchor: str, asof: bool = True,
     for i in range(1, days_back + 1):
         day = (_date.fromisoformat(anchor) - timedelta(days=i)).isoformat()
         path = f"{PRED_DIR}/{day}.json"
-        if skip_existing and os.path.exists(path):
+        if skip_existing and _has_rows(path):
             skipped += 1
             continue
-        print(f"  building {day}...", file=sys.stderr)
+        if os.path.exists(path):
+            empty += 1
+            print(f"  rebuilding {day} (existing snapshot was empty)...",
+                  file=sys.stderr)
+        else:
+            print(f"  building {day}...", file=sys.stderr)
         cmd = [sys.executable, os.path.join(here, "mlb_hit_probs.py"),
                "--date", day, "--min-prob", "0.70", "--keep-all",
                "--format", "json", "--out", path]
@@ -166,10 +185,10 @@ def backfill(days_back: int, anchor: str, asof: bool = True,
         subprocess.run(cmd, check=False)
         built += 1
 
-    print(f"Backfill done: {built} built, {skipped} already had snapshots.",
-          file=sys.stderr)
+    print(f"Backfill done: {built} built ({empty} were empty and got rebuilt), "
+          f"{skipped} already had data.", file=sys.stderr)
     if built == 0 and skipped:
-        print(f"  Nothing new — every day back to {first} is already saved. "
+        print(f"  Nothing new — every day back to {first} already has picks. "
               f"Use a larger --backfill to reach further back.", file=sys.stderr)
 
 
