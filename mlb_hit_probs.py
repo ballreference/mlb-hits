@@ -81,6 +81,36 @@ OUT_RBI_P = 0.04       # sac fly / productive out
 WALK_SCORE_ADJ = 0.90  # walks come around to score slightly less than hits
 HRR_CAP = 6            # track totals up to this, everything above lumped in
 
+# Learned correction from graded history, written by mlb_grade.py.
+CALIBRATION_PATH = "data/calibration.json"
+_calibration: dict | None = None
+
+
+def load_calibration(path: str = CALIBRATION_PATH) -> dict:
+    """Per-market {a, b} learned from results, or empty if not fitted yet."""
+    global _calibration
+    if _calibration is None:
+        try:
+            with open(path, encoding="utf-8") as fh:
+                _calibration = json.load(fh)
+        except Exception:
+            _calibration = {}
+    return _calibration
+
+
+def calibrate(key: str, p: float) -> float:
+    """Map a raw model probability onto what history says it really means."""
+    c = load_calibration().get(key)
+    if not c:
+        return p
+    p = min(max(p, 1e-6), 1 - 1e-6)
+    z = math.log(p / (1 - p)) * c["a"] + c["b"]
+    if z >= 0:
+        return 1.0 / (1.0 + math.exp(-z))
+    e = math.exp(z)
+    return e / (1.0 + e)
+
+
 # Rough hit park factors. EDIT THESE to taste — deliberately mild.
 PARK_FACTORS = {
     "Coors Field": 1.08, "Fenway Park": 1.04, "Great American Ball Park": 1.02,
@@ -648,13 +678,21 @@ def process_game(game: dict, season: int, day: str, lg: dict,
                 "pa_vs_bp": round(pa_bp, 2),
                 "season_pa": int(b["season_pa"]),
                 "split_pa": int(b["split_pa"]),
-                "hit_prob": round(p_1h, 4),
-                "prob_2h": round(p_2h, 4),
-                "prob_run": round(p_run, 4),
-                "prob_rbi": round(p_rbi, 4),
+                "hit_prob": round(calibrate("hit_prob", p_1h), 4),
+                "prob_2h": round(calibrate("prob_2h", p_2h), 4),
+                "prob_run": round(calibrate("prob_run", p_run), 4),
+                "prob_rbi": round(calibrate("prob_rbi", p_rbi), 4),
                 "prob_hrr1": round(at_least(hrr, 1), 4),
-                "prob_hrr2": round(at_least(hrr, 2), 4),
-                "prob_hrr3": round(at_least(hrr, 3), 4),
+                "prob_hrr2": round(calibrate("prob_hrr2", at_least(hrr, 2)), 4),
+                "prob_hrr3": round(calibrate("prob_hrr3", at_least(hrr, 3)), 4),
+                # keep the uncorrected numbers so calibration can be refit
+                # later without feeding its own output back in
+                "hit_prob_raw": round(p_1h, 4),
+                "prob_2h_raw": round(p_2h, 4),
+                "prob_run_raw": round(p_run, 4),
+                "prob_rbi_raw": round(p_rbi, 4),
+                "prob_hrr2_raw": round(at_least(hrr, 2), 4),
+                "prob_hrr3_raw": round(at_least(hrr, 3), 4),
                 "exp_hits": round(xh, 3),
                 "exp_runs": round(exp_runs, 3),
                 "exp_rbi": round(exp_rbi, 3),
@@ -953,6 +991,14 @@ def main() -> int:
     lg = league_rates(season)
     print(f"League baseline: {lg['h_pa']:.4f} H/PA, {lg['ob_pa']:.4f} OB/PA",
           file=sys.stderr)
+    cal = load_calibration()
+    if cal:
+        print(f"Calibration active for {len(cal)} market(s): "
+              + ", ".join(c.get("label", k) for k, c in cal.items()),
+              file=sys.stderr)
+    else:
+        print("No calibration file yet — using raw model output.",
+              file=sys.stderr)
 
     rows: list[dict] = []
     for g in games:
