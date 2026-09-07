@@ -1,0 +1,147 @@
+<!doctype html><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Odds check</title>
+<style>
+ body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      margin:18px;color:#1a1a1a;background:#fafaf8}
+ h1{font-size:19px;margin:0 0 2px}
+ p.sub{color:#666;margin:0 0 14px;font-size:12px}
+ a{color:#1d4ed8}
+ label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+       color:#555;margin:14px 0 5px}
+ textarea{width:100%;min-height:150px;padding:10px;border:1px solid #ccc;
+          border-radius:6px;font:13px ui-monospace,Menlo,monospace;box-sizing:border-box}
+ select,button{font:14px inherit;padding:9px 12px;border-radius:6px;
+               border:1px solid #ccc;background:#fff}
+ button{background:#1f2937;color:#fff;border:none;font-weight:600;cursor:pointer}
+ table{border-collapse:collapse;width:100%;background:#fff;margin-top:14px;
+       box-shadow:0 1px 3px rgba(0,0,0,.08);border-radius:6px;overflow:hidden}
+ th{background:#1f2937;color:#fff;text-align:left;padding:7px 9px;font-size:10px;
+    letter-spacing:.05em;text-transform:uppercase}
+ td{padding:7px 9px;border-top:1px solid #eee}
+ td.n{font-weight:600}
+ .pos{color:#15803d;font-weight:700}
+ .neg{color:#b91c1c}
+ .warn{background:#fef3c7;border:1px solid #fcd34d;padding:10px 12px;
+        border-radius:6px;font-size:12px;margin:14px 0}
+ .miss{color:#b91c1c;font-size:12px;margin-top:8px}
+</style>
+<h1>Odds check</h1>
+<p class="sub"><span id="meta">loading...</span> &middot;
+ <a href="index.html">board</a> &middot; <a href="results.html">track record</a></p>
+
+<label>Market</label>
+<select id="market">
+  <option value="prob_hrr2">2+ hits+runs+RBI</option>
+  <option value="hit_prob">1+ hit</option>
+  <option value="prob_hrr3">3+ hits+runs+RBI</option>
+  <option value="prob_2h">2+ hits</option>
+  <option value="prob_run">1+ run</option>
+  <option value="prob_rbi">1+ RBI</option>
+</select>
+
+<label>Paste players and odds &mdash; one per line</label>
+<textarea id="input" placeholder="Yandy Diaz -150
+Steven Kwan +105
+Pete Alonso -120
+Elly De La Cruz 130"></textarea>
+<p class="sub">American odds. Plus sign optional; a bare number counts as positive.
+ Anything else on the line is ignored.</p>
+<button onclick="run()">Rank by value</button>
+
+<div id="out"></div>
+
+<script>
+let PICKS = [];
+
+function norm(s){
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+          .toLowerCase().replace(/[^a-z ]/g,"").replace(/\s+/g," ").trim();
+}
+function lastName(s){ const p = norm(s).split(" "); return p[p.length-1]; }
+
+fetch("today.json").then(r=>r.json()).then(d=>{
+  PICKS = d.picks || [];
+  document.getElementById("meta").textContent =
+    PICKS.length + " batters on " + (d.date || "today");
+}).catch(function(e){
+  document.getElementById("meta").textContent = "could not load today's board";
+});
+
+function profit(odds){ return odds > 0 ? odds/100 : 100/Math.abs(odds); }
+function implied(odds){ return 1/(1+profit(odds)); }
+function breakeven(p){
+  // profit per $1 the bet must return to break even
+  const need = (1-p)/p;
+  // American odds below even money are quoted as negative; there is no
+  // such thing as "+76". Round so the reported price is still profitable.
+  return need >= 1 ? "+" + Math.ceil(need*100)
+                   : "-" + Math.floor(100/need);
+}
+function fmtOdds(o){ return o > 0 ? "+"+o : ""+o; }
+
+function findPick(name){
+  const n = norm(name);
+  let hit = PICKS.find(function(p){ return norm(p.batter) === n; });
+  if (hit) return hit;
+  hit = PICKS.find(function(p){
+    return norm(p.batter).startsWith(n) || n.startsWith(norm(p.batter)); });
+  if (hit) return hit;
+  const ln = lastName(name);
+  const all = PICKS.filter(function(p){ return lastName(p.batter) === ln; });
+  return all.length === 1 ? all[0] : null;
+}
+
+function run(){
+  const key = document.getElementById("market").value;
+  const lines = document.getElementById("input").value.split("\n");
+  const rows = [], missing = [];
+
+  for (const raw of lines){
+    const line = raw.trim();
+    if (!line) continue;
+    const m = line.match(/([+-]?\d{2,5})\s*$/);
+    if (!m){ missing.push(line + "  (no odds found)"); continue; }
+    const odds = parseInt(m[1], 10);
+    if (!odds || Math.abs(odds) < 100){ missing.push(line + "  (odds look wrong)"); continue; }
+    const name = line.slice(0, m.index).replace(/[,\t|]+$/,"").trim();
+    const pick = findPick(name);
+    if (!pick){ missing.push(name + "  (not on today's board)"); continue; }
+    const p = pick[key];
+    if (p == null){ missing.push(name + "  (no number for this market)"); continue; }
+    const imp = implied(odds);
+    rows.push({name: pick.batter, team: pick.team, odds: odds, p: p, imp: imp,
+               edge: p - imp, ev: 100*(p*profit(odds) - (1-p)), need: breakeven(p)});
+  }
+
+  rows.sort(function(a,b){ return b.ev - a.ev; });
+
+  let html = "";
+  if (rows.length){
+    html += "<table><tr><th>Batter</th><th>Tm</th><th>Odds</th><th>Model</th>"
+          + "<th>Book</th><th>Edge</th><th>EV/$100</th><th>Need</th></tr>";
+    for (const r of rows){
+      const cls = r.ev > 0 ? "pos" : "neg";
+      html += "<tr><td class='n'>"+r.name+"</td><td>"+r.team+"</td>"
+           + "<td>"+fmtOdds(r.odds)+"</td>"
+           + "<td class='n'>"+(r.p*100).toFixed(1)+"%</td>"
+           + "<td>"+(r.imp*100).toFixed(1)+"%</td>"
+           + "<td class='"+cls+"'>"+(r.edge*100>=0?"+":"")+(r.edge*100).toFixed(1)+"</td>"
+           + "<td class='"+cls+"'>"+(r.ev>=0?"+":"")+"$"+r.ev.toFixed(2)+"</td>"
+           + "<td>"+r.need+"</td></tr>";
+    }
+    html += "</table>";
+    const good = rows.filter(function(r){ return r.ev > 0; }).length;
+    html += "<div class='warn'><b>"+good+" of "+rows.length+"</b> priced above what the "
+         + "model thinks they are worth. <b>Need</b> is the shortest odds that would "
+         + "still break even at the model's number.<br><br>"
+         + "This only means something if the model's probabilities are accurate. "
+         + "Check the track record page before trusting a positive edge - an "
+         + "overconfident model invents edges that are not there.</div>";
+  }
+  if (missing.length){
+    html += "<div class='miss'><b>Skipped:</b><br>" + missing.join("<br>") + "</div>";
+  }
+  document.getElementById("out").innerHTML = html || "<p>Nothing to rank.</p>";
+}
+</script>
