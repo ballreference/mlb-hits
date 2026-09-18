@@ -1,56 +1,56 @@
 {
  "hit_prob": {
-  "a": 0.88486,
-  "b": 0.02003,
-  "n": 22106,
+  "a": 0.88109,
+  "b": 0.01971,
+  "n": 22275,
   "label": "1+ hit",
-  "mean_raw": 0.6178,
-  "mean_calibrated": 0.6098,
-  "mean_actual": 0.6102
+  "mean_raw": 0.618,
+  "mean_calibrated": 0.6094,
+  "mean_actual": 0.6098
  },
  "prob_hrr2": {
-  "a": 0.84941,
-  "b": -0.08351,
-  "n": 21899,
+  "a": 0.8476,
+  "b": -0.08622,
+  "n": 22068,
   "label": "2+ hits+runs+RBI",
-  "mean_raw": 0.4745,
-  "mean_calibrated": 0.4577,
-  "mean_actual": 0.4576
+  "mean_raw": 0.4747,
+  "mean_calibrated": 0.4573,
+  "mean_actual": 0.4572
  },
  "prob_hrr3": {
-  "a": 0.92334,
-  "b": -0.09798,
-  "n": 21899,
+  "a": 0.92154,
+  "b": -0.10177,
+  "n": 22068,
   "label": "3+ hits+runs+RBI",
-  "mean_raw": 0.304,
-  "mean_calibrated": 0.2966,
-  "mean_actual": 0.2959
+  "mean_raw": 0.3041,
+  "mean_calibrated": 0.2963,
+  "mean_actual": 0.2956
  },
  "prob_2h": {
-  "a": 0.93611,
-  "b": -0.08361,
-  "n": 21899,
+  "a": 0.93429,
+  "b": -0.08775,
+  "n": 22068,
   "label": "2+ hits",
-  "mean_raw": 0.2209,
-  "mean_calibrated": 0.2201,
-  "mean_actual": 0.2193
+  "mean_raw": 0.2211,
+  "mean_calibrated": 0.2199,
+  "mean_actual": 0.2191
  },
  "prob_run": {
-  "a": 0.92156,
-  "b": 0.07084,
-  "n": 21899,
+  "a": 0.92507,
+  "b": 0.07183,
+  "n": 22068,
   "label": "1+ run",
-  "mean_raw": 0.3558,
-  "mean_calibrated": 0.3827,
-  "mean_actual": 0.3826
+  "mean_raw": 0.3557,
+  "mean_calibrated": 0.3824,
+  "mean_actual": 0.3823
  },
  "prob_rbi": {
-  "a": 0.91106,
-  "b": -0.08984,
-  "n": 21899,
+  "a": 0.90984,
+  "b": -0.09073,
+  "n": 22068,
   "label": "1+ RBI",
   "mean_raw": 0.3016,
   "mean_calibrated": 0.2982,
-  "mean_actual": 0.2975
+  "mean_actual": 0.2974
  }
 }
